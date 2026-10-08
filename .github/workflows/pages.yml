@@ -31,6 +31,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Stamp the release version (cache busting)
+        run: node scripts/stamp-version.mjs site "${GITHUB_SHA::7}"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
@@ -46,5 +51,13 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # A re-run of an old run (or of only this job) would publish that run's old files.
+      - name: Refuse to deploy anything but the tip of main
+        run: |
+          latest=$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | cut -f1)
+          if [ -z "$latest" ] || [ "$latest" != "$GITHUB_SHA" ]; then
+            echo "::error::This run is for $GITHUB_SHA but main is now ${latest:-unknown}. Not deploying an old version; push to main (or run the workflow on main) instead."
+            exit 1
+          fi
       - id: deployment
         uses: actions/deploy-pages@v4
