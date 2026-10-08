@@ -48,7 +48,7 @@ test material into a playful journey, so practising feels like playing, not like
 | Purpose | Command |
 |---------|---------|
 | Verify everything (use this) | `./scripts/verify.sh` |
-| Test | `node --test tests/` |
+| Test | `node --test 'tests/**/*.test.js'` |
 | Run locally | `python3 -m http.server -d site 8000` → http://localhost:8000 (ES modules need http://, not file://) |
 | Start a change | `./scripts/new-change.sh "short title"` |
 | Approve an artifact (human) | `./scripts/approve.sh <id> <intent\|spec\|plan>` |
