@@ -54,6 +54,7 @@ const app = {
   rng: mulberry32(randomSeed()),
   cat: { x: 0, y: 0, dir: "down", frame: 0, bump: 0 },
   walk: null,
+  queuedAngle: null,
   bumpUntil: 0,
   level: null,
   levelNode: null,
@@ -79,6 +80,7 @@ function toast(text, ms = 2600) {
 
 function setMode(mode) {
   app.mode = mode
+  app.queuedAngle = null
   el.toast.hidden = true
   el.game.dataset.mode = mode
   const withPanel = mode === "level" || mode === "camp"
@@ -106,7 +108,11 @@ function placeCatOn(node) {
 // ---------- Map ----------
 
 function onDirection(angle) {
-  if (app.mode !== "map" || app.walk) return
+  if (app.mode !== "map") return
+  if (app.walk) {
+    app.queuedAngle = angle // remembered and done on arrival, so a push is never lost (0002 R12)
+    return
+  }
   const r = tryMove(app.world, app.state.nodeId, angle)
   if (r.move) startWalk(r.move)
   else app.bumpUntil = performance.now() + 250
@@ -130,8 +136,11 @@ function arrive() {
   app.state = P.moveTo(app.state, to.id)
   save()
   updateHud()
-  // The cat stops on every stone; she pushes again to go on. Since 0002 nothing blocks the path, so
-  // continuing while the stick or key is held would walk her straight past the level she wanted.
+  // The cat stops on every stone: one push = one stone (0002 R12). Since nothing blocks the path any
+  // more, walking on while the stick or key is held would carry her past the level she wanted.
+  const queued = app.queuedAngle
+  app.queuedAngle = null
+  if (queued !== null) onDirection(queued)
 }
 
 function onEnter() {

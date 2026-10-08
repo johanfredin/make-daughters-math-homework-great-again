@@ -75,11 +75,10 @@ export const T = {
     unitWhichPrompt: (p, unit) => `${p} ${unit}, vilket tal är det?`,
     unitWhichHelp: {
       tenths: (p) => `Tio tiondelar blir en hel. Hur många hela blir ${p} tiondelar?`,
-      hundredths: (p) => `Hundra hundradelar blir en hel. Hur många hela blir ${p} hundradelar?`,
+      hundredths: (p) => `Hundradelar står i andra rutan efter kommat. Sista siffran i ${p} ska stå där.`,
     },
     bar: {
       tenths: "10 tiondelar = 1 hel",
-      hundredths: "100 hundradelar = 1 hel",
     },
     // Feedback inside a step
     stepWrong: "Inte riktigt. Läs tipset och prova igen.",
@@ -87,7 +86,8 @@ export const T = {
     revealLast: (ans) => `Svaret är ${ans}.`,
     assembled: (expr, ans) => `${expr} = ${ans}`,
     doneTitle: "Där ser du, du klarade det!",
-    placeNames: { 3: "tusental", 2: "hundratal", 1: "tiotal", 0: "ental", [-1]: "tiondelar", [-2]: "hundradelar", [-3]: "tusendelar" },
+    // \u00ad = soft hyphen, so long names can wrap in narrow place-value columns
+    placeNames: { 3: "tusen\u00adtal", 2: "hundra\u00adtal", 1: "tiotal", 0: "ental", [-1]: "tion\u00addelar", [-2]: "hundra\u00addelar", [-3]: "tusen\u00addelar" },
   },
 
   camp: {
