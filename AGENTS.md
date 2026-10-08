@@ -92,8 +92,7 @@ docs/                  SDLC artifacts (changes, lessons, templates)
   approves it.
 - The photos in `sources/` are input for content design, not game assets. They may be public in the
   repo, but are not copied into `site/`.
-- The owner makes commits himself for now. Claude stages and proposes a commit message, but does not
-  run `git commit` unless asked.
+- Claude may commit on `change/<id>` branches, but never pushes. Pushing and merging are the owner's.
 
 ## SDLC workflow (AI-native)
 Every non-trivial change goes through `docs/changes/<id>/`, in its own worktree `.worktrees/<id>/`
