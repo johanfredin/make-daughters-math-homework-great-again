@@ -38,15 +38,18 @@ test("AC5: six right answers clear the level; the key is awarded once", () => {
   assert.equal(reward.keyAwarded, false, "an unfinished level gives nothing")
 })
 
-test("AC6: two wrong answers offer the breakdown; finishing it clears the task", () => {
+// 0002 replaces 0001's "two wrong answers offer the breakdown" (R5: help from the first second).
+test("0002 AC5: the breakdown is offered before any answer, on every task; finishing it clears the task", () => {
   let lv = L.startLevel(levelNode.tasks, mulberry32(3))
-  let r = L.answerTask(lv, wrong(lv))
+  for (let i = 0; i < lv.total; i++) {
+    assert.equal(lv.breakdownOffered, true, `task ${i + 1} offers the breakdown up front`)
+    lv = L.answerTask(lv, right(lv)).lv
+  }
+  lv = L.startLevel(levelNode.tasks, mulberry32(3))
+  const r = L.answerTask(lv, wrong(lv))
   assert.equal(r.result.status, "wrong")
-  assert.equal(r.result.offerBreakdown, false)
-  r = L.answerTask(r.lv, wrong(r.lv))
-  assert.equal(r.result.offerBreakdown, true)
-  lv = L.openBreakdown(r.lv)
-  assert.ok(lv.breakdown)
+  assert.equal(r.result.offerBreakdown, true, "still offered after a wrong answer")
+  lv = L.openBreakdown(L.startLevel(levelNode.tasks, mulberry32(3)))
   const steps = lv.breakdown.data.steps.length
   for (let i = 0; i < steps; i++) {
     const rr = stepRight(lv)
@@ -58,9 +61,8 @@ test("AC6: two wrong answers offer the breakdown; finishing it clears the task",
   assert.equal(lv.tries, 0)
 })
 
-test("the breakdown cannot be opened before it is offered", () => {
-  const lv = L.startLevel(levelNode.tasks, mulberry32(4))
-  assert.throws(() => L.openBreakdown(lv))
+test("0002 AC5: camp practice offers the breakdown up front too", () => {
+  assert.equal(L.campPractice(levelNode, mulberry32(4)).breakdownOffered, true)
 })
 
 test("invalid input does not count as a try", () => {

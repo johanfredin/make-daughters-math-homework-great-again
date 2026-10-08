@@ -12,6 +12,7 @@ const COLORS = {
   pathDot: "#c8b273",
   stone: "#cfc6ad",
   stoneDark: "#8f866f",
+  stoneSoon: "#9d9a94", // grey stone for levels that are not built yet
   ring: "#fff3a6",
   flag: "#ffd23f",
   sky1: "#7cc4ec",
@@ -144,16 +145,18 @@ export function createScene(canvas) {
       ctx.fillStyle = COLORS.stone
       ctx.fillRect(x - 3, y - 3, 6, 6)
     } else if (node.kind === "level") {
-      const pulse = !locked && !view.isCleared(node) && !view.reducedMotion && Math.floor(view.time / 400) % 2 === 0
+      const soon = view.isComingSoon(node)
+      const pulse = !soon && !view.isCleared(node) && !view.reducedMotion && Math.floor(view.time / 400) % 2 === 0
       ctx.fillStyle = pulse ? COLORS.ring : S.OUTLINE
       ctx.fillRect(x - 7, y - 6, 14, 12)
       ctx.fillRect(x - 6, y - 7, 12, 14)
-      ctx.fillStyle = COLORS.stone
+      ctx.fillStyle = soon ? COLORS.stoneSoon : COLORS.stone
       ctx.fillRect(x - 6, y - 5, 12, 10)
       ctx.fillRect(x - 5, y - 6, 10, 12)
       ctx.fillStyle = COLORS.stoneDark
       ctx.fillRect(x - 5, y + 4, 10, 1)
-      drawDigits(number, x, y, S.OUTLINE)
+      drawDigits(number, x, y, soon ? COLORS.stoneDark : S.OUTLINE)
+      if (soon) draw(sprite("sign", S.SIGN.rows, S.SIGN.palette), x + 3, y - 14)
       if (view.isCleared(node)) {
         ctx.fillStyle = S.OUTLINE
         ctx.fillRect(x + 4, y - 14, 1, 9)
@@ -175,7 +178,7 @@ export function createScene(canvas) {
   }
 
   /**
-   * view: { world, isLocked(node), isCleared(node), cat: {x, y, dir, frame, bump}, fur, time, reducedMotion }
+   * view: { world, isLocked(node), isComingSoon(node), isCleared(node), bossLabel, cat: {x, y, dir, frame, bump}, fur, time, reducedMotion }
    */
   function drawMap(view) {
     if (mapLayerWorld !== view.world) {

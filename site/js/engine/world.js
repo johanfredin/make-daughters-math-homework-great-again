@@ -115,14 +115,8 @@ export function neighbourInDirection(world, id, angle) {
   return best?.id ?? null
 }
 
-/**
- * Decide what happens when she pushes a direction on node `from`.
- * blockedReason(node) returns null when the node may be walked to, otherwise a reason string.
- * → { move: id } | { blocked: reason, target: id } | { bump: true }
- */
-export function tryMove(world, from, angle, blockedReason) {
+/** What happens when she pushes a direction on node `from`: → { move: id } | { bump: true }. Nothing blocks walking. */
+export function tryMove(world, from, angle) {
   const to = neighbourInDirection(world, from, angle)
-  if (!to) return { bump: true }
-  const reason = blockedReason(nodeById(world, to))
-  return reason ? { blocked: reason, target: to } : { move: to }
+  return to ? { move: to } : { bump: true }
 }

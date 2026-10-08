@@ -335,6 +335,24 @@ input[type="text"] {
 
 .options { display: grid; gap: 10px; margin-top: 8px; }
 
+/* "10 tiondelar = 1 hel" / "100 hundradelar = 1 hel" (0002 R8) */
+.unit-bar { margin: 10px auto; text-align: center; }
+.unit-bar figcaption { margin-top: 6px; font-size: 20px; font-weight: 700; }
+.unit-cells { display: inline-grid; gap: 3px; padding: 4px; background: var(--bg); border: 3px solid var(--good); border-radius: 6px; }
+.unit-cells { grid-template-columns: repeat(10, 24px); }
+.unit-cells span { height: 32px; background: var(--good); border-radius: 2px; }
+
+/* Hundredths column picture (0002 amendment): each option as a row of place-value boxes */
+.pv-row { display: inline-flex; align-items: flex-end; gap: 4px; }
+.pv-cell { display: inline-block; width: 48px; min-height: 40px; line-height: 40px; text-align: center; font-size: 24px; font-weight: 800; background: var(--bg); border: 2px solid var(--border-dark); border-radius: 4px; }
+.pv-head .pv-cell { min-height: 0; line-height: 1.15; font-size: 12px; hyphens: manual; overflow-wrap: normal; font-weight: 700; background: none; border: 0; }
+.pv-cell.pv-target { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.pv-head .pv-cell.pv-target { color: var(--accent); box-shadow: none; }
+.pv-comma { width: 8px; font-size: 24px; font-weight: 800; }
+.btn-columns { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 14px; }
+.pv-label { font-size: 24px; min-width: 64px; text-align: right; }
+.options .pv-head { padding: 0 14px; justify-content: flex-start; }
+
 .message { text-align: center; padding: 24px 8px; }
 .message h2 { font-size: 30px; color: var(--accent); }
 

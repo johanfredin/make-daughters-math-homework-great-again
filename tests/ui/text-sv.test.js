@@ -37,3 +37,9 @@ test("Swedish notation: no dot decimals or star multiplication in texts", () => 
     assert.doesNotMatch(s, /\d ?\* ?\d/, `${path} uses * for multiplication`)
   }
 })
+
+test("0002 AC8: no text tells her to move the comma or count decimals", () => {
+  for (const [path, s] of strings) {
+    assert.doesNotMatch(s, /steg åt vänster|steg åt höger|decimaler har|flytta kommat/i, `${path}: "${s}"`)
+  }
+})

@@ -61,9 +61,11 @@ test("AC4: no path within 45° returns null", () => {
   assert.equal(neighbourInDirection(world, "start", -Math.PI / 4 - 0.01), "camp-mult")
 })
 
-test("AC4: tryMove — walk, blocked by a locked node, bump", () => {
-  const blocked = (node) => (node.kind === "level" && !node.playable ? "comingSoon" : null)
-  assert.deepEqual(tryMove(world, "start", N, blocked), { move: "camp-mult" })
-  assert.deepEqual(tryMove(world, "start", E, blocked), { blocked: "comingSoon", target: "rakna" })
-  assert.deepEqual(tryMove(world, "start", W, blocked), { bump: true })
+// 0002 replaces 0001's "blocked by a locked node" (R2: nothing blocks walking).
+test("0002 AC2/AC3: tryMove walks onto unbuilt levels and the den; bumps where there is no path", () => {
+  assert.deepEqual(tryMove(world, "start", N), { move: "camp-mult" })
+  assert.deepEqual(tryMove(world, "start", E), { move: "rakna" }, "unbuilt level 1 is walkable")
+  assert.deepEqual(tryMove(world, "rakna", N), { move: "multiplikation" }, "then up to the playable level")
+  assert.deepEqual(tryMove(world, "repetition-2", E), { move: "boss" }, "the den is walkable")
+  assert.deepEqual(tryMove(world, "start", W), { bump: true })
 })

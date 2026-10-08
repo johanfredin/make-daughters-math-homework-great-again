@@ -14,10 +14,9 @@ const KEY_ANGLES = {
 /**
  * root: element covering the game; stick/knob: thumbstick elements; enterButton: the "Gå in" button.
  * handlers: { enabled(): bool, onDirection(angle), onEnter() }.
- * Returns { heldAngle(): number | null } — the direction currently held, for continuous walking.
+ * Each press (key, or the stick entering a direction) walks one stone. Returns { isTouchDevice, reset() }.
  */
 export function createInput({ root, stick, knob, enterButton }, handlers) {
-  const heldKeys = new Set()
   let stickAngle = null
   let stickPointer = null
   let origin = null
@@ -29,15 +28,12 @@ export function createInput({ root, stick, knob, enterButton }, handlers) {
     if (!handlers.enabled() || e.target.closest?.("input, textarea")) return
     if (e.key in KEY_ANGLES) {
       e.preventDefault()
-      heldKeys.add(e.key)
-      handlers.onDirection(KEY_ANGLES[e.key])
+      if (!e.repeat) handlers.onDirection(KEY_ANGLES[e.key]) // one stone per press
     } else if (e.key === "Enter" || e.key === " ") {
       e.preventDefault()
       if (!e.repeat) handlers.onEnter()
     }
   })
-  window.addEventListener("keyup", (e) => heldKeys.delete(e.key))
-  window.addEventListener("blur", () => heldKeys.clear())
 
   const hideStick = () => {
     stickPointer = null
@@ -80,11 +76,6 @@ export function createInput({ root, stick, knob, enterButton }, handlers) {
   enterButton.addEventListener("click", () => handlers.enabled() && handlers.onEnter())
 
   return {
-    heldAngle() {
-      if (stickAngle !== null) return stickAngle
-      const last = [...heldKeys].at(-1)
-      return last === undefined ? null : KEY_ANGLES[last]
-    },
     isTouchDevice,
     reset: hideStick,
   }

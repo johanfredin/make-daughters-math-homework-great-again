@@ -4,6 +4,7 @@ import { T } from "./text-sv.js"
 import { createNumpad } from "./numpad.js"
 import { toPlain } from "../engine/decimal.js"
 import { typeText } from "../engine/dialog.js"
+import { columnRange, columnCells } from "./place-value.js"
 import { FUR_COUNT, MAX_NAME } from "../engine/progress.js"
 
 /** Tiny element helper: h("button", { className: "big", onclick }, "text", child…) */
@@ -126,6 +127,40 @@ function placeValue(numbers) {
   return h("table", { className: "place-value" }, h("thead", {}, headRow), h("tbody", {}, rows))
 }
 
+/** "10 tiondelar = 1 hel": 10 boxes in a row (0002 R8, tenths only). */
+function unitBar(unitKey) {
+  return h(
+    "figure",
+    { className: "unit-bar" },
+    h("div", { className: "unit-cells", "aria-hidden": "true" }, Array.from({ length: 10 }, () => h("span"))),
+    h("figcaption", {}, T.breakdown.bar[unitKey]),
+  )
+}
+
+/**
+ * Column picture for hundredths (0002 amendment): one row of place-value boxes per option, holding the
+ * count's digits (e.g. "24") so they end in the option's column. The hundredths box is highlighted.
+ * columns: { digits, ends: [pos per option] } with pos -2 = hundradelar, -1 = tiondelar, 0 = ental.
+ */
+function columnOption(digitsText, endPos, label, onclick) {
+  const cols = columnRange(digitsText)
+  const values = columnCells(digitsText, endPos) // tested in tests/ui/place-value.test.js
+  const cells = cols.flatMap((pos, i) => [
+    h("span", { className: pos === -2 ? "pv-cell pv-target" : "pv-cell" }, values[i]),
+    pos === 0 ? h("span", { className: "pv-comma" }, ",") : null,
+  ])
+  return h("button", { type: "button", className: "btn btn-option btn-columns", onclick }, h("span", { className: "pv-row", "aria-hidden": "true" }, cells), h("span", { className: "pv-label" }, label))
+}
+
+function columnHeader(digitsText) {
+  const cols = columnRange(digitsText)
+  return h(
+    "div",
+    { className: "pv-row pv-head", "aria-hidden": "true" },
+    cols.flatMap((pos) => [h("span", { className: pos === -2 ? "pv-cell pv-target" : "pv-cell" }, T.breakdown.placeNames[pos]), pos === 0 ? h("span", { className: "pv-comma" }) : null]),
+  )
+}
+
 /**
  * view: { title, expr, stepText, step, feedback, backText, onSubmit(input), onChoose(index), onBack }
  * step: a breakdown step (prompt, help, visual, kind, options)
@@ -139,10 +174,14 @@ export function breakdownPanel(panel, v) {
     h("p", { className: "step-of" }, v.stepText),
     h("p", { className: "feedback", role: "status" }, v.feedback || " "),
     h("div", { className: "dialog" }, h("p", { className: "dialog-text" }, step.help)),
-    placeValue(step.visual),
+    step.visual.length ? placeValue(step.visual) : null,
+    step.bar ? unitBar(step.bar) : null,
     h("p", { className: "question" }, step.prompt),
   )
-  if (step.kind === "choose") {
+  if (step.kind === "choose" && step.columns) {
+    const { digits, ends } = step.columns
+    panel.append(h("div", { className: "options" }, columnHeader(digits), step.options.map((o, i) => columnOption(digits, ends[i], o, () => v.onChoose(i)))))
+  } else if (step.kind === "choose") {
     panel.append(h("div", { className: "options" }, step.options.map((o, i) => button(o, () => v.onChoose(i), "btn btn-option"))))
   } else {
     const [display, pad] = answerArea(v.onSubmit)
