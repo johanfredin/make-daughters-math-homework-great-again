@@ -39,7 +39,6 @@ export const T = {
     hintComma: "Nästan! Kolla var kommat ska stå.",
     hintPlus: "Det ska vara gånger, inte plus.",
     hintGeneric: ["Nästan! Prova igen.", "Inte riktigt. Försök en gång till.", "Ta det lugnt och räkna en gång till."],
-    offerBreakdown: "Vill du dela upp det i mindre steg?",
     breakdownButton: "Dela upp det",
     praise: ["Snyggt!", "Klockrent!", "Där satt den!", "Bra jobbat!", "Grymt!"],
     levelDone: "Banan är klar!",

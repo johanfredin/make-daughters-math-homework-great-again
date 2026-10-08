@@ -200,7 +200,7 @@ function submitAnswer(text) {
   if (r.result.status === "invalid") return showTask(T.level.invalid)
   if (r.result.status === "wrong") {
     const hint = HINTS[r.result.hint]()
-    return showTask(r.result.offerBreakdown ? `${hint} ${T.level.offerBreakdown}` : hint)
+    return showTask(hint) // the "Dela upp det" button is always there (0002 R5)
   }
   taskCleared()
 }

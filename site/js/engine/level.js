@@ -1,16 +1,14 @@
 // Level state machine (R7, R8, R10, R13). Pure: the UI calls these and renders the result.
 //
-// task → answer
+// task → answer                ("Dela upp det" is offered from the start when the task type has one)
 //   correct            → next task (or done)
-//   wrong (1st)        → hint
-//   wrong (2nd+)       → hint + offer "Dela upp det"
+//   wrong              → hint
 //   breakdown finished → the task counts as cleared
 import { taskType } from "../tasks/index.js"
 import { checkStep } from "../tasks/steps.js"
 import { clearLevel } from "./progress.js"
 import { pick } from "./rng.js"
 
-export const OFFER_BREAKDOWN_AFTER = 2
 export const REVEAL_STEP_AFTER = 3
 export const PRACTICE_TASKS = 3
 
@@ -18,7 +16,7 @@ function withTask(lv, index) {
   if (index >= lv.specs.length) return { ...lv, index, task: null, tries: 0, breakdownOffered: false, breakdown: null, done: true }
   const spec = lv.specs[index]
   const task = { ...taskType(spec.type).generate(spec, lv.rng), type: spec.type } // the registry key is the truth
-  return { ...lv, index, task, tries: 0, breakdownOffered: false, breakdown: null, done: false }
+  return { ...lv, index, task, tries: 0, breakdownOffered: hasBreakdown(task), breakdown: null, done: false }
 }
 
 export function startLevel(specs, rng, { startIndex = 0, practice = false } = {}) {
@@ -32,9 +30,7 @@ export function answerTask(lv, input) {
   const r = taskType(lv.task.type).check(lv.task, input)
   if (r.status === "invalid") return { lv, result: r }
   if (r.status === "correct") return { lv: withTask(lv, lv.index + 1), result: r }
-  const tries = lv.tries + 1
-  const offerBreakdown = tries >= OFFER_BREAKDOWN_AFTER && hasBreakdown(lv.task)
-  return { lv: { ...lv, tries, breakdownOffered: offerBreakdown }, result: { ...r, offerBreakdown } }
+  return { lv: { ...lv, tries: lv.tries + 1 }, result: { ...r, offerBreakdown: lv.breakdownOffered } }
 }
 
 /** A task type may offer "Dela upp det" by exporting breakdown(task); the engine knows nothing else about it. */
