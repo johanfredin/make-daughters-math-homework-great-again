@@ -335,6 +335,15 @@ input[type="text"] {
 
 .options { display: grid; gap: 10px; margin-top: 8px; }
 
+/* "10 tiondelar = 1 hel" / "100 hundradelar = 1 hel" (0002 R8) */
+.unit-bar { margin: 10px auto; text-align: center; }
+.unit-bar figcaption { margin-top: 6px; font-size: 20px; font-weight: 700; }
+.unit-cells { display: inline-grid; gap: 3px; padding: 4px; background: var(--bg); border: 3px solid var(--good); border-radius: 6px; }
+.unit-bar-tenths .unit-cells { grid-template-columns: repeat(10, 24px); }
+.unit-bar-tenths .unit-cells span { height: 32px; background: var(--good); border-radius: 2px; }
+.unit-bar-hundredths .unit-cells { grid-template-columns: repeat(10, 9px); gap: 2px; }
+.unit-bar-hundredths .unit-cells span { height: 9px; background: var(--good); border-radius: 1px; }
+
 .message { text-align: center; padding: 24px 8px; }
 .message h2 { font-size: 30px; color: var(--accent); }
 

@@ -130,8 +130,8 @@ function arrive() {
   app.state = P.moveTo(app.state, to.id)
   save()
   updateHud()
-  const held = input.heldAngle()
-  if (held !== null) onDirection(held)
+  // The cat stops on every stone; she pushes again to go on. Since 0002 nothing blocks the path, so
+  // continuing while the stick or key is held would walk her straight past the level she wanted.
 }
 
 function onEnter() {

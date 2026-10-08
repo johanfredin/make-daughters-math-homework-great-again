@@ -126,6 +126,17 @@ function placeValue(numbers) {
   return h("table", { className: "place-value" }, h("thead", {}, headRow), h("tbody", {}, rows))
 }
 
+/** "10 tiondelar = 1 hel": 10 boxes in a row, or 10×10 small boxes for hundredths (0002 R8). */
+function unitBar(unitKey) {
+  const cells = unitKey === "tenths" ? 10 : 100
+  return h(
+    "figure",
+    { className: `unit-bar unit-bar-${unitKey}` },
+    h("div", { className: "unit-cells", "aria-hidden": "true" }, Array.from({ length: cells }, () => h("span"))),
+    h("figcaption", {}, T.breakdown.bar[unitKey]),
+  )
+}
+
 /**
  * view: { title, expr, stepText, step, feedback, backText, onSubmit(input), onChoose(index), onBack }
  * step: a breakdown step (prompt, help, visual, kind, options)
@@ -139,7 +150,8 @@ export function breakdownPanel(panel, v) {
     h("p", { className: "step-of" }, v.stepText),
     h("p", { className: "feedback", role: "status" }, v.feedback || " "),
     h("div", { className: "dialog" }, h("p", { className: "dialog-text" }, step.help)),
-    placeValue(step.visual),
+    step.visual.length ? placeValue(step.visual) : null,
+    step.bar ? unitBar(step.bar) : null,
     h("p", { className: "question" }, step.prompt),
   )
   if (step.kind === "choose") {
