@@ -54,9 +54,9 @@ in tiondelar/hundradelar, then pick the right number. No step tells her to "move
 
 ## Acceptance criteria
 - **AC1 (R1)** A test lists every in-scope calculation task on the 7 sheets. Each one has a breakdown
-  (46 + 51 − 3 fraction mixes = 94 tasks).
+  (32 + 40 + 6 + 18 = 96 tasks; an earlier count of 94 was an arithmetic slip).
 - **AC2 (R2)** The named examples above give exactly the step answers listed.
-- **AC3 (R3, R4)** A property test runs over all 94 breakdowns and checks:
+- **AC3 (R3, R4)** A property test runs over all 96 breakdowns and checks:
   - the last step equals the answer
   - no help line reveals its step's answer
   - options are valid and in size order

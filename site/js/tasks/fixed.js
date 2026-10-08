@@ -4,6 +4,7 @@ import { parseRational, rat, add, sub, mul, div, eq, cmp } from "../engine/ratio
 import { dec, isInteger, cmp as dcmp } from "../engine/decimal.js"
 import { parseAnswer } from "../ui/number-format.js"
 import { breakdown as decimalBreakdown } from "./breakdown.js"
+import { strategyFor } from "./strategies.js"
 
 export const TYPE = "fixed"
 export const ESTIMATE_TOLERANCE = rat(15, 100)
@@ -89,10 +90,13 @@ function decimalTimesWhole(task) {
   return pair && BREAKABLE_DECIMAL.test(pair[2].trim()) ? [pair[0], pair[1]] : null
 }
 
-/** "Dela upp det" is offered for decimal · whole tasks (0003 R4). */
-export const canBreakdown = (task) => decimalTimesWhole(task) !== null
+/** Calculations (no prompt) get the 0004 strategies: + − · / with decimals and whole numbers. */
+const calculation = (task) => (task.kind === "number" && !task.prompt ? strategyFor(task.text) : null)
+
+/** "Dela upp det": decimal · whole as in 0002 when it fits, otherwise a 0004 strategy. */
+export const canBreakdown = (task) => decimalTimesWhole(task) !== null || calculation(task) !== null
 
 export function breakdown(task) {
   const pair = decimalTimesWhole(task)
-  return pair ? decimalBreakdown(pair[0], pair[1], task.text) : null
+  return pair ? decimalBreakdown(pair[0], pair[1], task.text) : calculation(task)
 }

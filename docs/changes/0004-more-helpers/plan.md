@@ -33,7 +33,7 @@ approved_at: 2026-10-08T20:36:02+02:00
 ## Tests (proof)
 | AC | Proof |
 |----|-------|
-| AC1 | `strategies.test.js` coverage (94 tasks) |
+| AC1 | `strategies.test.js` coverage (96 tasks) |
 | AC2 | `strategies.test.js` named examples |
 | AC3 | `strategies.test.js` property test |
 | AC4 | browser |

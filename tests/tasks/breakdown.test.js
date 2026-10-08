@@ -10,7 +10,9 @@ import { formatNumber, parseAnswer } from "../../site/js/ui/number-format.js"
 // 0003: the property test runs over every sheet task that offers "Dela upp det" (the generator is gone).
 const SHEETS = new URL("../../site/worlds/kap1/sheets/", import.meta.url)
 const SHEET_TASKS = readdirSync(SHEETS).flatMap((f) => JSON.parse(readFileSync(new URL(f, SHEETS), "utf8")).tasks.map((t) => ({ ...t, type: "fixed", sheet: f })))
-const BREAKABLE = SHEET_TASKS.filter(fixed.canBreakdown)
+// The 0002 strategies (units, split) still cover exactly the 46 decimal · whole tasks; 0004 strategies are
+// tested in strategies.test.js.
+const BREAKABLE = SHEET_TASKS.filter((t) => fixed.canBreakdown(t) && ["units", "split"].includes(fixed.breakdown(t).strategy))
 
 const answers = (b) =>
   b.steps.map((s) => (s.kind === "choose" ? s.options[s.answerIndex] : formatNumber(s.answer)))
