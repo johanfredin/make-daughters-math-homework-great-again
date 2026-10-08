@@ -31,7 +31,7 @@ test material into a playful journey, so practising feels like playing, not like
   - Mistakes give a hint and another try.
   - Short sessions should feel complete.
 
-## Stack (proposed — to be confirmed in the spec of change 0001)
+## Stack (set by change 0001)
 - **Static site, no backend.** Plain HTML + CSS + vanilla JavaScript (ES modules).
   - No framework and no build step, so the deployed files are the source files.
 - **DOM for UI and tasks:** text, buttons and number input stay crisp, accessible and touch-friendly.
@@ -51,12 +51,13 @@ test material into a playful journey, so practising feels like playing, not like
 | Verify everything (use this) | `./scripts/verify.sh` |
 | Test | `node --test 'tests/**/*.test.js'` |
 | Run locally | `python3 -m http.server -d site 8000` → http://localhost:8000 (ES modules need http://, not file://) |
+| Live | https://johanfredin.github.io/make-daughters-math-homework-great-again/ (deployed by `.github/workflows/pages.yml` on push to `main`) |
 | Start a change | `./scripts/new-change.sh "short title"` |
 | Approve an artifact (human) | `./scripts/approve.sh <id> <intent\|spec\|plan>` |
 
 `scripts/verify.sh` is the single source of truth for "is this change done". Extend it as the stack grows.
 
-## Architecture (target — refined by change specs)
+## Architecture
 ```
 site/                  deployed as-is (static hosting root)
   index.html
@@ -123,4 +124,6 @@ Rules for agents:
 - Before claiming done, run `./scripts/verify.sh` and include its result.
 
 ## Known pitfalls
-- (none yet)
+- `node --test tests/` fails on Node 22 (a directory is not a test file). Use a glob: `node --test 'tests/**/*.test.js'`, or just `./scripts/verify.sh`.
+- The CSP blocks inline styles: set dynamic sizes with `el.style.x = …` (CSSOM), never `setAttribute("style", …)` or `style=` in HTML.
+- Player-facing text outside `site/js/ui/text-sv.js` fails `tests/site/structure.test.js`, and so does Swedish text in a JS *string*. Comments are fine.
