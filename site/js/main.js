@@ -226,6 +226,7 @@ function finishLevel() {
   const r = L.reward(app.world, app.state, app.level, app.levelNode.id)
   app.state = r.state
   save()
+  if (r.keyAwarded) app.anim = { kind: "key", start: performance.now() }
   V.messagePanel(el.panel, {
     title: T.level.levelDone,
     text: r.keyAwarded ? T.level.keyEarned : T.level.alreadyHaveKey,
@@ -278,7 +279,7 @@ function runBreakdown({ data, current, answer, onFinished, onBack, backText, int
     if (result.finished) {
       return V.messagePanel(el.panel, {
         title: T.breakdown.doneTitle,
-        text: revealed ? `${T.breakdown.reveal(revealed)} ${data.summary}` : data.summary,
+        text: revealed ? `${T.breakdown.revealLast(revealed)} ${data.summary}` : data.summary,
         buttonText: T.breakdown.finish,
         onButton: onFinished,
       })
@@ -324,7 +325,7 @@ function showCampMenu() {
   V.campPanel(el.panel, {
     name: node.name,
     mentor: node.mentor,
-    greeting: T.camp.greeting,
+    greeting: T.camp.greetings[node.camp] ?? T.camp.greetingDefault,
     onBack: toMap,
     onShowMe: () => {
       const { breakdown } = L.campDemo(node)
@@ -349,8 +350,14 @@ function pounce() {
 }
 
 function levelView(now) {
-  const base = { fur: fur(), catX: 40, catY: 83, catFrame: Math.floor(now / 500) % 2, foe: { x: 230, y: 83, visible: true, flip: false } }
+  const foeKind = app.levelNode?.foe ?? "rat"
+  const base = { fur: fur(), catX: 40, catY: 83, catFrame: Math.floor(now / 500) % 2, foe: { kind: foeKind, x: 230, y: 83, visible: true, flip: false }, key: null, time: now }
   const a = app.anim
+  if (a?.kind === "key") {
+    // celebration (R8): the key floats above the cat; no foe left
+    const bob = reducedMotion() ? 0 : Math.round(Math.sin((now - a.start) / 250) * 4)
+    return { ...base, foe: { ...base.foe, visible: false }, key: { x: 40, y: 40 + bob, sparkle: !reducedMotion() } }
+  }
   if (!a || a.kind !== "pounce") return base
   const t = (now - a.start) / POUNCE_MS
   if (t >= 1.6) {
@@ -400,6 +407,7 @@ function frame(now) {
         isLocked: (n) => P.isLocked(app.world, app.state, n),
         isCleared: (n) => app.state.cleared.includes(n.id),
         cat: app.cat,
+        bossLabel: `${P.keys(app.state)}/${app.world.keysToBoss}`,
         fur: fur(),
         time: now,
         reducedMotion: reducedMotion(),
@@ -424,6 +432,7 @@ function showStart() {
       V.confirmScreen(el.overlay, {
         text: T.start.confirmRestart,
         onYes: () => {
+          app.resetNotice = false
           P.clear(app.storage)
           app.state = P.freshState(app.world)
           placeCatOn(currentNode())

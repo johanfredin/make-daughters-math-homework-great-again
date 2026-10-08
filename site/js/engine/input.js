@@ -69,7 +69,9 @@ export function createInput({ root, stick, knob, enterButton }, handlers) {
     knob.style.transform = `translate(calc(-50% + ${dx * k}px), calc(-50% + ${dy * k}px))`
     const before = stickAngle
     stickAngle = dist > DEAD_ZONE ? Math.atan2(dy, dx) : null
-    if (stickAngle !== null && before === null) handlers.onDirection(stickAngle)
+    // Push again when the stick enters a new 8-way sector, so she can steer without lifting her thumb.
+    const sector = (a) => (a === null ? null : Math.round(a / (Math.PI / 4)))
+    if (stickAngle !== null && sector(stickAngle) !== sector(before)) handlers.onDirection(stickAngle)
   })
   for (const type of ["pointerup", "pointercancel"]) {
     root.addEventListener(type, (e) => e.pointerId === stickPointer && hideStick())

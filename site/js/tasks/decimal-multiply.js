@@ -53,7 +53,7 @@ export function generate(spec, rng) {
 
 /** "Dela upp det" for this task (optional per task type; the level engine offers it only if present). */
 export function breakdown(task) {
-  return breakdownOf(task.decimalFactor, task.wholeFactor)
+  return breakdownOf(task.decimalFactor, task.wholeFactor, task.text)
 }
 
 /** The camp's fixed demo task from world.json, e.g. { "type": "decimal-multiply", "decimal": "1,5", "whole": 5 }. */

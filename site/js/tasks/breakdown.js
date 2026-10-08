@@ -47,12 +47,11 @@ function noCommaStrategy(d, w) {
   ]
 }
 
-/** Breakdown of decimalFactor · wholeFactor. */
-export function breakdown(decimalFactor, wholeFactor) {
+/** Breakdown of decimalFactor · wholeFactor. `expr` = the task as she saw it (factor order). */
+export function breakdown(decimalFactor, wholeFactor, expr = formatExpr(decimalFactor, "*", wholeFactor)) {
   const useSplit = cmp(decimalFactor, dec(1)) >= 0 && !isInteger(decimalFactor)
   const steps = useSplit ? splitStrategy(decimalFactor, wholeFactor) : noCommaStrategy(decimalFactor, wholeFactor)
   const answer = mul(decimalFactor, wholeFactor)
-  const expr = formatExpr(decimalFactor, "*", wholeFactor)
   return { strategy: useSplit ? "split" : "noComma", expr, answer, steps, summary: B.assembled(expr, f(answer)) }
 }
 

@@ -164,6 +164,12 @@ export function createScene(canvas) {
       draw(sprite("tent", S.TENT.rows, S.TENT.palette), x - 8, y - 12)
     } else if (node.kind === "boss") {
       draw(sprite("den", S.DEN.rows, S.DEN.palette), x - 8, y - 12)
+      // "n/7" under the den (R5)
+      const label = view.bossLabel
+      const w = label.length * 4 + 3
+      ctx.fillStyle = S.OUTLINE
+      ctx.fillRect(x - Math.ceil(w / 2), y + 5, w, 9)
+      drawDigits(label, x, y + 9, COLORS.flag)
     }
     if (locked && node.kind !== "start") draw(sprite("lock", S.LOCK.rows, S.LOCK.palette), x + 3, y - 12)
   }
@@ -203,14 +209,26 @@ export function createScene(canvas) {
     ctx.fillRect(0, 128, MAP_W, 2)
   }
 
-  /** view: { fur, catX, catY, catFrame, foe: {x, y, visible, flip}, time } — 3× sprites */
+  const FOE_SPRITES = { rat: S.RAT } // keep in sync with world.js FOES
+
+  /** view: { fur, catX, catY, catFrame, foe: {kind, x, y, visible, flip}, key: {x, y, sparkle} | null, time } — 3× sprites */
   function drawLevel(view) {
     drawBackdrop(view.time)
     const cat = catImage(view.fur, "right", view.catFrame ?? 0)
     draw(cat, view.catX, view.catY, { scale: 3 })
     if (view.foe?.visible) {
-      const rat = sprite("rat", S.RAT.rows, S.RAT.palette)
-      draw(rat, view.foe.x, view.foe.y, { scale: 3, flip: view.foe.flip })
+      const foe = FOE_SPRITES[view.foe.kind] ?? S.RAT
+      draw(sprite(`foe-${view.foe.kind}`, foe.rows, foe.palette), view.foe.x, view.foe.y, { scale: 3, flip: view.foe.flip })
+    }
+    if (view.key) {
+      draw(sprite("key", S.KEY.rows, S.KEY.palette), view.key.x, view.key.y, { scale: 3 })
+      if (view.key.sparkle) {
+        ctx.fillStyle = "#fff6c2"
+        for (let i = 0; i < 6; i++) {
+          const a = view.time / 300 + (i * Math.PI) / 3
+          ctx.fillRect(Math.round(view.key.x + 21 + Math.cos(a) * 30), Math.round(view.key.y + 9 + Math.sin(a) * 18), 2, 2)
+        }
+      }
     }
   }
 

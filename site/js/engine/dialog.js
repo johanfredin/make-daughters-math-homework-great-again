@@ -17,11 +17,12 @@ export function typeText(el, text) {
     const finish = () => {
       clearInterval(timer)
       el.textContent = text
-      el.removeEventListener("pointerdown", finish)
+      target.removeEventListener("pointerdown", finish)
       resolve()
     }
+    const target = el.closest(".dialog") ?? el // a tap anywhere on the box skips
     el.textContent = ""
-    el.addEventListener("pointerdown", finish)
+    target.addEventListener("pointerdown", finish)
     timer = setInterval(() => {
       shown++
       el.textContent = text.slice(0, shown)

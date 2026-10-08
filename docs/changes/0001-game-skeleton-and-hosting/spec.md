@@ -483,6 +483,12 @@ task → [answer]
   every task is one times-table fact plus moving the comma.
 - **2026-10-08 Owner (chat, during build):** Claude may commit, and may push after asking (recorded in
   AGENTS.md/CLAUDE.md on this branch).
+- **2026-10-08 Claude (review, accepted deviations):**
+  - R18: when a save exists, the start screen shows "Fortsätt" and "Börja om" *instead of* "Spela", because
+    "Spela" would do the same as "Fortsätt".
+  - R4: below 2× the canvas is scaled by a fraction rather than a whole number. This happens when the
+    panel is open on a 1024 px desktop, and a whole-number 1× would leave the scene tiny.
+  - R5: the den on the map now shows "n/7" itself, as well as the counter in the top bar.
 
 ## Open questions
 1. Game title and cat names: do you or she want to rename them later? This is easy to change in

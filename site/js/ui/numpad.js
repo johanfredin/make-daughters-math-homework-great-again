@@ -52,7 +52,11 @@ export function createNumpad(container, display, onSubmit) {
     else if (e.key === "," || e.key === ".") press(",")
     else if (e.key === "-" || e.key === MINUS) press(MINUS)
     else if (e.key === "Backspace") press("erase")
-    else if (e.key === "Enter") press("ok")
+    else if (e.key === "Enter") {
+      // Let Enter activate another focused button (e.g. "Dela upp det") instead of OK.
+      if (e.target.closest?.("button") && !container.contains(e.target)) return
+      press("ok")
+    }
     else return
     e.preventDefault()
   }

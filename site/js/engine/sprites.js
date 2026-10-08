@@ -190,6 +190,18 @@ export const LOCK = {
   rows: ["..kkk..", ".k...k.", ".k...k.", "kkkkkkk", "kyyyyyk", "kyykyyk", "kyyyyyk", "kkkkkkk"],
 }
 
+export const KEY = {
+  palette: { k: OUTLINE, y: "#ffd23f" },
+  rows: [
+    ".kkkk.........",
+    "kyyyyk........",
+    "ky..ykkkkkkkkk",
+    "ky..yyyyyyyyyk",
+    "kyyyykkkkykkyk",
+    ".kkkk....k..k.",
+  ],
+}
+
 export const LEAF = {
   palette: { k: "#1b2a1b", g: "#5fb04e", G: "#8fd27a" },
   rows: ["...kk", "..kGk", ".kGgk", "kggk.", "kkk.."],
@@ -207,6 +219,7 @@ export const DIGITS = {
   7: ["111", "001", "010", "010", "010"],
   8: ["111", "101", "111", "101", "111"],
   9: ["111", "101", "111", "001", "111"],
+  "/": ["001", "001", "010", "100", "100"],
 }
 
 /** Every sprite (rows + palette) in this module, for consistency tests. */
@@ -216,7 +229,7 @@ export function allSprites() {
     ...Object.fromEntries(CAT_SIDE.map((rows, i) => [`catSide${i}`, { rows, palette: cat }])),
     ...Object.fromEntries(CAT_FRONT.map((rows, i) => [`catFront${i}`, { rows, palette: cat }])),
     ...Object.fromEntries(CAT_BACK.map((rows, i) => [`catBack${i}`, { rows, palette: cat }])),
-    RAT, FOX_FACE, TREE, TENT, DEN, LOCK, LEAF,
+    RAT, FOX_FACE, TREE, TENT, DEN, LOCK, LEAF, KEY,
   }
 }
 
