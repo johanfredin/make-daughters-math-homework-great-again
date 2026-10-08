@@ -6,6 +6,7 @@ export const MAP_W = 320
 export const MAP_H = 180
 const KINDS = new Set(["start", "level", "camp", "boss"])
 export const FOES = new Set(["rat"]) // foe sprites the scene can draw
+export const THEMES = new Set(["skog", "strand", "host", "sno", "oken", "natt", "grotta"]) // palettes in scene.js
 
 /** Returns a list of human-readable problems; empty means valid. */
 export function validateWorld(w) {
@@ -29,10 +30,8 @@ export function validateWorld(w) {
     if (n?.kind === "level") {
       if (typeof n.playable !== "boolean") err(`${at}: playable must be true or false`)
       if (n.foe !== undefined && !FOES.has(n.foe)) err(`${at}: foe must be one of ${[...FOES].join(", ")}`)
-      if (n.playable) {
-        if (!Array.isArray(n.tasks) || n.tasks.length === 0) err(`${at}: a playable level needs tasks`)
-        else n.tasks.forEach((t, j) => TASK_TYPES[t?.type] || err(`${at}: tasks[${j}] has unknown type "${t?.type}"`))
-      }
+      if (n.playable && (typeof n.sheet !== "string" || !/^sheets\/[\w-]+\.json$/.test(n.sheet))) err(`${at}: a playable level needs a sheet file`)
+      if (n.theme !== undefined && !THEMES.has(n.theme)) err(`${at}: theme must be one of ${[...THEMES].join(", ")}`)
     }
     if (n?.kind === "camp") {
       if (typeof n.mentor !== "string" || !n.mentor) err(`${at}: mentor missing`)

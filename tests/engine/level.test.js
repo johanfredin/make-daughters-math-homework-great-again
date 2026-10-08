@@ -3,139 +3,125 @@ import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
 import * as L from "../../site/js/engine/level.js"
 import * as P from "../../site/js/engine/progress.js"
+import { sectionTasks } from "../../site/js/engine/sheet.js"
 import { mulberry32 } from "../../site/js/engine/rng.js"
-import { formatNumber } from "../../site/js/ui/number-format.js"
-import { add, dec } from "../../site/js/engine/decimal.js"
 import { TASK_TYPES } from "../../site/js/tasks/index.js"
-import * as decimalMultiply from "../../site/js/tasks/decimal-multiply.js"
 
-const world = JSON.parse(readFileSync(new URL("../../site/worlds/kap1/world.json", import.meta.url), "utf8"))
-const levelNode = world.nodes.find((n) => n.id === "multiplikation")
-const right = (lv) => formatNumber(lv.task.answer)
-const wrong = (lv) => formatNumber(add(lv.task.answer, dec(1000))) // never a comma/plus mistake
+const load = (p) => JSON.parse(readFileSync(new URL(`../../site/worlds/kap1/${p}`, import.meta.url), "utf8"))
+const world = load("world.json")
+const multi = load("sheets/multiplikation.json") // 32 tasks, 4 sections of 8
+const rep2 = load("sheets/repetition-2.json")
 
-/** Answer the current breakdown step correctly. */
+const right = (lv) => (lv.task.kind === "choice" ? lv.task.answer : lv.task.answer)
+const wrong = (lv) => (lv.task.kind === "choice" ? (lv.task.answer + 1) % lv.task.options.length : "999999")
 const stepRight = (lv) => {
   const s = L.currentStep(lv)
-  return L.answerStep(lv, s.kind === "choose" ? s.answerIndex : formatNumber(s.answer))
+  return L.answerStep(lv, s.kind === "choose" ? s.answerIndex : s.answer.n / 10 ** s.answer.scale + "")
 }
 
-test("AC5: six right answers clear the level; the key is awarded once", () => {
-  let lv = L.startLevel(levelNode.tasks, mulberry32(1))
-  assert.equal(lv.total, 6)
-  for (let i = 0; i < 6; i++) {
-    assert.equal(lv.done, false)
-    const r = L.answerTask(lv, right(lv))
-    assert.equal(r.result.status, "correct")
-    lv = r.lv
-  }
-  assert.equal(lv.done, true)
-  let s = P.freshState(world)
-  let reward = L.reward(world, s, lv, "multiplikation")
-  assert.equal(reward.keyAwarded, true)
-  assert.equal(P.keys(reward.state), 1)
-  reward = L.reward(world, reward.state, L.startLevel(levelNode.tasks, mulberry32(2)), "multiplikation")
-  assert.equal(reward.keyAwarded, false, "an unfinished level gives nothing")
-})
-
-// 0002 replaces 0001's "two wrong answers offer the breakdown" (R5: help from the first second).
-test("0002 AC5: the breakdown is offered before any answer, on every task; finishing it clears the task", () => {
-  let lv = L.startLevel(levelNode.tasks, mulberry32(3))
-  for (let i = 0; i < lv.total; i++) {
-    assert.equal(lv.breakdownOffered, true, `task ${i + 1} offers the breakdown up front`)
+test("0003 R5: a section plays its tasks in sheet order", () => {
+  let lv = L.startSection(sectionTasks(multi, 0))
+  assert.equal(lv.total, 8)
+  const seen = []
+  while (!lv.done) {
+    seen.push(lv.task.id)
     lv = L.answerTask(lv, right(lv)).lv
   }
-  lv = L.startLevel(levelNode.tasks, mulberry32(3))
-  const r = L.answerTask(lv, wrong(lv))
-  assert.equal(r.result.status, "wrong")
-  assert.equal(r.result.offerBreakdown, true, "still offered after a wrong answer")
-  lv = L.openBreakdown(L.startLevel(levelNode.tasks, mulberry32(3)))
-  const steps = lv.breakdown.data.steps.length
-  for (let i = 0; i < steps; i++) {
-    const rr = stepRight(lv)
-    assert.equal(rr.result.status, "correct")
-    lv = rr.lv
-  }
-  assert.equal(lv.index, 1, "the task counts as cleared")
-  assert.equal(lv.breakdown, null)
-  assert.equal(lv.tries, 0)
+  assert.deepEqual(seen, ["1a", "1b", "2a", "2b", "3a", "3b", "4a", "4b"])
+  assert.deepEqual(lv.solvedNow, seen)
 })
 
-test("0002 AC5: camp practice offers the breakdown up front too", () => {
-  assert.equal(L.campPractice(levelNode, mulberry32(4)).breakdownOffered, true)
+test("0003 R6: skipping moves on without solving; a replay plays only unsolved tasks", () => {
+  let lv = L.startSection(sectionTasks(multi, 0))
+  lv = L.answerTask(lv, right(lv)).lv // 1a solved
+  lv = L.skipTask(lv) // 1b skipped
+  while (!lv.done) lv = L.answerTask(lv, right(lv)).lv
+  assert.ok(!lv.solvedNow.includes("1b"))
+  const replay = L.startSection(sectionTasks(multi, 0), { solved: lv.solvedNow })
+  assert.equal(replay.total, 1)
+  assert.equal(replay.task.id, "1b")
+})
+
+test("0003: choice tasks are answered by option index; wrong answers count as tries", () => {
+  let lv = L.startSection(sectionTasks(rep2, 0)) // largest/smallest choices
+  const r = L.answerTask(lv, wrong(lv))
+  assert.equal(r.result.status, "wrong")
+  assert.equal(r.lv.tries, 1)
+  lv = L.answerTask(r.lv, right(r.lv)).lv
+  assert.equal(lv.solvedNow.length, 1)
 })
 
 test("invalid input does not count as a try", () => {
-  let lv = L.startLevel(levelNode.tasks, mulberry32(5))
-  for (const s of ["", "abc", ","]) {
-    const r = L.answerTask(lv, s)
-    assert.equal(r.result.status, "invalid")
-    lv = r.lv
-  }
+  let lv = L.startSection(sectionTasks(multi, 0))
+  for (const s of ["", "abc", ","]) lv = L.answerTask(lv, s).lv
   assert.equal(lv.tries, 0)
 })
 
+test("0003 R4: 'Dela upp det' on decimal · whole tasks; finishing it solves the task", () => {
+  let lv = L.startSection(sectionTasks(multi, 0))
+  assert.equal(lv.breakdownOffered, true, "7 · 0,1 can be broken down")
+  lv = L.openBreakdown(lv)
+  while (lv.breakdown) lv = stepRight(lv).lv
+  assert.deepEqual(lv.solvedNow, ["1a"])
+  assert.equal(lv.task.id, "1b")
+  const choice = L.startSection(sectionTasks(rep2, 0))
+  assert.equal(choice.breakdownOffered, false, "no breakdown for a choice task")
+  assert.throws(() => L.openBreakdown(choice))
+})
+
 test("R10: a breakdown step reveals its answer after 3 wrong tries and moves on", () => {
-  let lv = L.startLevel(levelNode.tasks, mulberry32(6))
-  lv = L.answerTask(lv, wrong(lv)).lv
-  lv = L.openBreakdown(L.answerTask(lv, wrong(lv)).lv)
-  const firstWrong = (l) => {
+  let lv = L.openBreakdown(L.startSection(sectionTasks(multi, 0)))
+  const bad = (l) => {
     const s = L.currentStep(l)
-    return s.kind === "choose" ? (s.answerIndex + 1) % s.options.length : formatNumber(add(s.answer, dec(1000)))
+    return s.kind === "choose" ? (s.answerIndex + 1) % s.options.length : "999"
   }
-  let r = L.answerStep(lv, firstWrong(lv))
-  assert.equal(r.result.status, "wrong")
-  r = L.answerStep(r.lv, firstWrong(r.lv))
-  assert.equal(r.result.status, "wrong")
-  r = L.answerStep(r.lv, firstWrong(r.lv))
+  let r = L.answerStep(lv, bad(lv))
+  r = L.answerStep(r.lv, bad(r.lv))
+  r = L.answerStep(r.lv, bad(r.lv))
   assert.equal(r.result.status, "revealed")
   assert.equal(r.lv.breakdown.step, 1)
-  assert.equal(L.answerStep(r.lv, "xyz").result.status, "invalid")
 })
 
-test("resuming starts at the saved task index", () => {
-  const lv = L.startLevel(levelNode.tasks, mulberry32(7), { startIndex: 4 })
-  assert.equal(lv.index, 4)
-  assert.equal(lv.total, 6)
+test("0003 R7: the key comes once 2/3 of a level's tasks are solved — not before, and only once", () => {
+  assert.equal(P.keyThreshold(32), 22)
+  assert.equal(P.keyThreshold(5), 4)
+  assert.equal(P.keyThreshold(39), 26)
+  let s = P.freshState(world)
+  const ids = multi.tasks.map((t) => t.id)
+  s = P.markSolved(s, "multiplikation", ids.slice(0, 21))
+  assert.equal(P.awardKeyIfEarned(s, "multiplikation", 32).keyAwarded, false)
+  s = P.markSolved(s, "multiplikation", ids.slice(20, 22)) // overlap is ignored
+  assert.equal(P.solvedIds(s, "multiplikation").length, 22)
+  let r = P.awardKeyIfEarned(s, "multiplikation", 32)
+  assert.equal(r.keyAwarded, true)
+  assert.equal(P.keys(r.state), 1)
+  r = P.awardKeyIfEarned(P.markSolved(r.state, "multiplikation", ids), "multiplikation", 32)
+  assert.equal(r.keyAwarded, false, "no second key")
+  assert.equal(P.keys(r.state), 1)
 })
 
-test("AC11: camp practice is 3 tasks from the level's own specs and gives no key", () => {
-  let lv = L.campPractice(levelNode, mulberry32(8))
+test("AC11: camp practice is 3 tasks with a breakdown from the level's sheet, played in full", () => {
+  const lv = L.campPractice(multi.tasks, mulberry32(8))
   assert.equal(lv.practice, true)
   assert.equal(lv.total, 3)
-  for (const spec of lv.specs) assert.ok(levelNode.tasks.includes(spec))
-  while (!lv.done) lv = L.answerTask(lv, right(lv)).lv
-  const r = L.reward(world, P.freshState(world), lv, "multiplikation")
-  assert.equal(r.keyAwarded, false)
-  assert.equal(P.keys(r.state), 0)
-})
-
-test("AC11: camp examples come from the level's specs", () => {
-  for (let seed = 1; seed <= 50; seed++) {
-    const ex = L.campExample(levelNode, mulberry32(seed))
-    assert.ok(levelNode.tasks.includes(ex.spec))
-    assert.ok(ex.breakdown.steps.length >= 3)
-  }
+  for (const t of lv.queue) assert.ok(L.hasBreakdown({ ...t, type: "fixed" }))
+  const ex = L.campExample(multi.tasks, mulberry32(9))
+  assert.ok(multi.tasks.some((t) => t.id === ex.task.id))
+  assert.ok(ex.breakdown.steps.length >= 3)
 })
 
 test("the camp demo is the world's demo task (1,5 · 5) with the split strategy", () => {
-  const camp = world.nodes.find((n) => n.kind === "camp")
-  const demo = L.campDemo(camp)
+  const demo = L.campDemo(world.nodes.find((n) => n.kind === "camp"))
   assert.equal(demo.breakdown.strategy, "split")
   assert.equal(demo.breakdown.expr, "1,5 · 5")
 })
 
 test("a task type without breakdown() is never offered 'Dela upp det'", () => {
-  const { breakdown, ...withoutBreakdown } = decimalMultiply
+  const { breakdown, canBreakdown, ...withoutBreakdown } = TASK_TYPES.fixed
   TASK_TYPES["no-breakdown"] = withoutBreakdown
   try {
-    const specs = [{ ...levelNode.tasks[0], type: "no-breakdown" }]
-    let lv = L.startLevel(specs, mulberry32(9))
-    for (let i = 0; i < 4; i++) {
-      const r = L.answerTask(lv, wrong(lv))
-      assert.equal(r.result.offerBreakdown, false)
-      lv = r.lv
-    }
+    const lv = L.startSection(sectionTasks(multi, 0).map((t) => ({ ...t, type: "no-breakdown" })))
+    assert.equal(lv.breakdownOffered, false)
     assert.throws(() => L.openBreakdown(lv))
   } finally {
     delete TASK_TYPES["no-breakdown"]

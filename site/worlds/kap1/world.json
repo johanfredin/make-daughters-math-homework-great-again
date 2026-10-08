@@ -3,62 +3,158 @@
   "name": "Decimalskogen",
   "keysToBoss": 7,
   "nodes": [
-    { "id": "start", "kind": "start", "x": 24, "y": 136 },
     {
-      "id": "rakna", "kind": "level", "x": 72, "y": 136,
-      "name": "Räkna med decimaltal", "source": "sources/kap1/decimal-numbers.png", "playable": false
+      "id": "start",
+      "kind": "start",
+      "x": 24,
+      "y": 136
     },
     {
-      "id": "multiplikation", "kind": "level", "x": 72, "y": 88,
-      "name": "Multiplikation med decimaltal", "source": "sources/kap1/multiply-decimals.png",
-      "playable": true, "foe": "rat",
-      "tasks": [
-        { "type": "decimal-multiply", "whole": { "from": 2, "to": 9 }, "decimal": "0,d" },
-        { "type": "decimal-multiply", "whole": { "from": 2, "to": 9 }, "decimal": "0,0d" },
-        { "type": "decimal-multiply", "whole": { "from": 2, "to": 6 }, "decimal": "n,5", "n": [1, 2] },
-        { "type": "decimal-multiply", "whole": { "from": 20, "to": 90, "step": 10 }, "decimal": "0,d" },
-        { "type": "decimal-multiply", "whole": { "from": 20, "to": 90, "step": 10 }, "decimal": "0,0d" },
-        { "type": "decimal-multiply", "whole": { "from": 200, "to": 500, "step": 100 }, "decimal": "0,d" }
-      ]
+      "id": "rakna",
+      "kind": "level",
+      "x": 72,
+      "y": 136,
+      "name": "Räkna med decimaltal",
+      "source": "sources/kap1/decimal-numbers.png",
+      "playable": true,
+      "sheet": "sheets/rakna.json",
+      "theme": "skog",
+      "foe": "rat"
     },
     {
-      "id": "blandad-form", "kind": "level", "x": 120, "y": 88,
-      "name": "Blandad form och bråkform", "source": "sources/kap1/mix.png", "playable": false
+      "id": "multiplikation",
+      "kind": "level",
+      "x": 72,
+      "y": 88,
+      "name": "Multiplikation med decimaltal",
+      "source": "sources/kap1/multiply-decimals.png",
+      "playable": true,
+      "foe": "rat",
+      "sheet": "sheets/multiplikation.json",
+      "theme": "strand"
     },
     {
-      "id": "hur-raknar-1", "kind": "level", "x": 120, "y": 40,
-      "name": "Hur räknar du? 1", "source": "sources/kap1/how-do-you-count-1.png", "playable": false
+      "id": "blandad-form",
+      "kind": "level",
+      "x": 120,
+      "y": 88,
+      "name": "Blandad form och bråkform",
+      "source": "sources/kap1/mix.png",
+      "playable": true,
+      "sheet": "sheets/blandad-form.json",
+      "theme": "host",
+      "foe": "rat"
     },
     {
-      "id": "hur-raknar-2", "kind": "level", "x": 184, "y": 40,
-      "name": "Hur räknar du? 2", "source": "sources/kap1/how-do-you-count-2.png", "playable": false
+      "id": "hur-raknar-1",
+      "kind": "level",
+      "x": 120,
+      "y": 40,
+      "name": "Hur räknar du? 1",
+      "source": "sources/kap1/how-do-you-count-1.png",
+      "playable": true,
+      "sheet": "sheets/hur-raknar-1.json",
+      "theme": "sno",
+      "foe": "rat"
     },
     {
-      "id": "repetition-1", "kind": "level", "x": 184, "y": 104,
-      "name": "Repetition 1", "source": "sources/kap1/repeat-chap-1-1.png", "playable": false
+      "id": "hur-raknar-2",
+      "kind": "level",
+      "x": 184,
+      "y": 40,
+      "name": "Hur räknar du? 2",
+      "source": "sources/kap1/how-do-you-count-2.png",
+      "playable": true,
+      "sheet": "sheets/hur-raknar-2.json",
+      "theme": "oken",
+      "foe": "rat"
     },
     {
-      "id": "repetition-2", "kind": "level", "x": 248, "y": 104,
-      "name": "Repetition 2", "source": "sources/kap1/repeat-chap-1-2.png", "playable": false
+      "id": "repetition-1",
+      "kind": "level",
+      "x": 184,
+      "y": 104,
+      "name": "Repetition 1",
+      "source": "sources/kap1/repeat-chap-1-1.png",
+      "playable": true,
+      "sheet": "sheets/repetition-1.json",
+      "theme": "natt",
+      "foe": "rat"
     },
     {
-      "id": "camp-mult", "kind": "camp", "x": 24, "y": 88,
-      "name": "Multiplikationslägret", "mentor": "Salvia",
-      "demo": { "type": "decimal-multiply", "decimal": "1,5", "whole": 5 },
+      "id": "repetition-2",
+      "kind": "level",
+      "x": 248,
+      "y": 104,
+      "name": "Repetition 2",
+      "source": "sources/kap1/repeat-chap-1-2.png",
+      "playable": true,
+      "sheet": "sheets/repetition-2.json",
+      "theme": "grotta",
+      "foe": "rat"
+    },
+    {
+      "id": "camp-mult",
+      "kind": "camp",
+      "x": 24,
+      "y": 88,
+      "name": "Multiplikationslägret",
+      "mentor": "Salvia",
+      "demo": {
+        "type": "decimal-multiply",
+        "decimal": "1,5",
+        "whole": 5
+      },
       "practiceFrom": "multiplikation"
     },
-    { "id": "boss", "kind": "boss", "x": 296, "y": 104, "name": "Rävens lya" }
+    {
+      "id": "boss",
+      "kind": "boss",
+      "x": 296,
+      "y": 104,
+      "name": "Rävens lya"
+    }
   ],
   "paths": [
-    ["start", "rakna"],
-    ["start", "camp-mult"],
-    ["camp-mult", "multiplikation"],
-    ["rakna", "multiplikation"],
-    ["multiplikation", "blandad-form"],
-    ["blandad-form", "hur-raknar-1"],
-    ["hur-raknar-1", "hur-raknar-2"],
-    ["hur-raknar-2", "repetition-1"],
-    ["repetition-1", "repetition-2"],
-    ["repetition-2", "boss"]
+    [
+      "start",
+      "rakna"
+    ],
+    [
+      "start",
+      "camp-mult"
+    ],
+    [
+      "camp-mult",
+      "multiplikation"
+    ],
+    [
+      "rakna",
+      "multiplikation"
+    ],
+    [
+      "multiplikation",
+      "blandad-form"
+    ],
+    [
+      "blandad-form",
+      "hur-raknar-1"
+    ],
+    [
+      "hur-raknar-1",
+      "hur-raknar-2"
+    ],
+    [
+      "hur-raknar-2",
+      "repetition-1"
+    ],
+    [
+      "repetition-1",
+      "repetition-2"
+    ],
+    [
+      "repetition-2",
+      "boss"
+    ]
   ]
 }

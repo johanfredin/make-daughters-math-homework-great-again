@@ -1,0 +1,380 @@
+{
+ "sections": [
+  [
+   "1max",
+   "1min",
+   "2max",
+   "2min",
+   "3max",
+   "3min"
+  ],
+  [
+   "4a",
+   "4b",
+   "4c",
+   "5a",
+   "5b",
+   "5c"
+  ],
+  [
+   "6a",
+   "6b",
+   "6c",
+   "7a",
+   "7b",
+   "7c"
+  ],
+  [
+   "8a",
+   "8b",
+   "8c",
+   "9a",
+   "9b",
+   "9c"
+  ],
+  [
+   "10a",
+   "10b",
+   "10c",
+   "11a",
+   "11b",
+   "11c"
+  ],
+  [
+   "12a",
+   "12b",
+   "12c",
+   "12d",
+   "12e",
+   "12f"
+  ],
+  [
+   "13",
+   "14",
+   "15"
+  ]
+ ],
+ "tasks": [
+  {
+   "id": "1max",
+   "label": "1",
+   "kind": "choice",
+   "prompt": "Vilket tal är störst?",
+   "options": [
+    "4,51",
+    "4,15",
+    "5,14",
+    "5,41"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1min",
+   "label": "1",
+   "kind": "choice",
+   "prompt": "Vilket tal är minst?",
+   "options": [
+    "4,51",
+    "4,15",
+    "5,14",
+    "5,41"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2max",
+   "label": "2",
+   "kind": "choice",
+   "prompt": "Vilket tal är störst?",
+   "options": [
+    "0,5",
+    "0,05",
+    "0,005",
+    "0,55"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2min",
+   "label": "2",
+   "kind": "choice",
+   "prompt": "Vilket tal är minst?",
+   "options": [
+    "0,5",
+    "0,05",
+    "0,005",
+    "0,55"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "3max",
+   "label": "3",
+   "kind": "choice",
+   "prompt": "Vilket tal är störst?",
+   "options": [
+    "4,08",
+    "4,081",
+    "4,81",
+    "4,801"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "3min",
+   "label": "3",
+   "kind": "choice",
+   "prompt": "Vilket tal är minst?",
+   "options": [
+    "4,08",
+    "4,081",
+    "4,81",
+    "4,801"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "4a",
+   "kind": "number",
+   "text": "−7 − 2",
+   "answer": "−9"
+  },
+  {
+   "id": "4b",
+   "kind": "number",
+   "text": "4 − 9",
+   "answer": "−5"
+  },
+  {
+   "id": "4c",
+   "kind": "number",
+   "text": "−7 + 7",
+   "answer": "0"
+  },
+  {
+   "id": "5a",
+   "kind": "number",
+   "text": "3 − 8 − 2",
+   "answer": "−7"
+  },
+  {
+   "id": "5b",
+   "kind": "number",
+   "text": "−4 + 7 − 1",
+   "answer": "2"
+  },
+  {
+   "id": "5c",
+   "kind": "number",
+   "text": "−6 − 2 − 1",
+   "answer": "−9"
+  },
+  {
+   "id": "6a",
+   "kind": "fraction",
+   "text": "3/5 + 4/5",
+   "den": 5,
+   "answer": "7"
+  },
+  {
+   "id": "6b",
+   "kind": "fraction",
+   "text": "1 − 5/8",
+   "den": 8,
+   "answer": "3"
+  },
+  {
+   "id": "6c",
+   "kind": "fraction",
+   "text": "2 3/7 − 1 5/7",
+   "den": 7,
+   "answer": "5"
+  },
+  {
+   "id": "7a",
+   "kind": "number",
+   "text": "0,9 − 0,15",
+   "answer": "0,75"
+  },
+  {
+   "id": "7b",
+   "kind": "number",
+   "text": "0,8 + 0,45",
+   "answer": "1,25"
+  },
+  {
+   "id": "7c",
+   "kind": "number",
+   "text": "0,9 · 0,3",
+   "answer": "0,27"
+  },
+  {
+   "id": "8a",
+   "kind": "number",
+   "text": "100 · 1,245",
+   "answer": "124,5"
+  },
+  {
+   "id": "8b",
+   "kind": "number",
+   "text": "23 / 100",
+   "answer": "0,23"
+  },
+  {
+   "id": "8c",
+   "kind": "number",
+   "text": "1 000 · 0,07",
+   "answer": "70"
+  },
+  {
+   "id": "9a",
+   "kind": "number",
+   "text": "40 · 200",
+   "answer": "8 000"
+  },
+  {
+   "id": "9b",
+   "kind": "number",
+   "text": "6 000 / 200",
+   "answer": "30"
+  },
+  {
+   "id": "9c",
+   "kind": "number",
+   "text": "8 000 / 40",
+   "answer": "200"
+  },
+  {
+   "id": "10a",
+   "kind": "number",
+   "text": "20 / 0,5",
+   "answer": "40"
+  },
+  {
+   "id": "10b",
+   "kind": "number",
+   "text": "0,7 · 60",
+   "answer": "42"
+  },
+  {
+   "id": "10c",
+   "kind": "number",
+   "text": "0,07 · 300",
+   "answer": "21"
+  },
+  {
+   "id": "11a",
+   "kind": "number",
+   "text": "1,184 765 23",
+   "answer": "1,18",
+   "prompt": "Avrunda till hundradelar."
+  },
+  {
+   "id": "11b",
+   "kind": "number",
+   "text": "0,855 4673",
+   "answer": "0,86",
+   "prompt": "Avrunda till hundradelar."
+  },
+  {
+   "id": "11c",
+   "kind": "number",
+   "text": "15,349 165",
+   "answer": "15,35",
+   "prompt": "Avrunda till hundradelar."
+  },
+  {
+   "id": "12a",
+   "kind": "numberline",
+   "prompt": "Vilket tal pekar pilen på?",
+   "arrow": "a",
+   "from": "0",
+   "to": "1,1",
+   "answer": "0,03"
+  },
+  {
+   "id": "12b",
+   "kind": "numberline",
+   "prompt": "Vilket tal pekar pilen på?",
+   "arrow": "b",
+   "from": "0",
+   "to": "1,1",
+   "answer": "0,18"
+  },
+  {
+   "id": "12c",
+   "kind": "numberline",
+   "prompt": "Vilket tal pekar pilen på?",
+   "arrow": "c",
+   "from": "0",
+   "to": "1,1",
+   "answer": "0,35"
+  },
+  {
+   "id": "12d",
+   "kind": "numberline",
+   "prompt": "Vilket tal pekar pilen på?",
+   "arrow": "d",
+   "from": "0",
+   "to": "1,1",
+   "answer": "0,76"
+  },
+  {
+   "id": "12e",
+   "kind": "numberline",
+   "prompt": "Vilket tal pekar pilen på?",
+   "arrow": "e",
+   "from": "0",
+   "to": "1,1",
+   "answer": "0,82"
+  },
+  {
+   "id": "12f",
+   "kind": "numberline",
+   "prompt": "Vilket tal pekar pilen på?",
+   "arrow": "f",
+   "from": "0",
+   "to": "1,1",
+   "answer": "1,04"
+  },
+  {
+   "id": "13",
+   "kind": "choice",
+   "prompt": "Vilket svar är bäst?",
+   "text": "87,9 + 34,2 + 51,8",
+   "options": [
+    "150",
+    "160",
+    "170",
+    "180"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "14",
+   "kind": "choice",
+   "prompt": "Vilket svar är bäst?",
+   "text": "5,9 · 203",
+   "options": [
+    "1 200",
+    "1 300",
+    "1 400",
+    "1 500"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "15",
+   "kind": "choice",
+   "prompt": "Vilket svar är bäst?",
+   "text": "48,5 · 61,7",
+   "options": [
+    "2 600",
+    "2 800",
+    "3 000",
+    "3 200"
+   ],
+   "answer": 2
+  }
+ ]
+}

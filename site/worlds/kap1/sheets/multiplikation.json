@@ -1,0 +1,238 @@
+{
+ "sections": [
+  [
+   "1a",
+   "1b",
+   "2a",
+   "2b",
+   "3a",
+   "3b",
+   "4a",
+   "4b"
+  ],
+  [
+   "5a",
+   "5b",
+   "6a",
+   "6b",
+   "7a",
+   "7b",
+   "8a",
+   "8b"
+  ],
+  [
+   "9a",
+   "9b",
+   "10a",
+   "10b",
+   "11a",
+   "11b",
+   "12a",
+   "12b"
+  ],
+  [
+   "13a",
+   "13b",
+   "14a",
+   "14b",
+   "15a",
+   "15b",
+   "16a",
+   "16b"
+  ]
+ ],
+ "tasks": [
+  {
+   "id": "1a",
+   "kind": "number",
+   "text": "7 · 0,1",
+   "answer": "0,7"
+  },
+  {
+   "id": "1b",
+   "kind": "number",
+   "text": "7 · 0,01",
+   "answer": "0,07"
+  },
+  {
+   "id": "2a",
+   "kind": "number",
+   "text": "0,4 · 2",
+   "answer": "0,8"
+  },
+  {
+   "id": "2b",
+   "kind": "number",
+   "text": "0,04 · 2",
+   "answer": "0,08"
+  },
+  {
+   "id": "3a",
+   "kind": "number",
+   "text": "6 · 0,04",
+   "answer": "0,24"
+  },
+  {
+   "id": "3b",
+   "kind": "number",
+   "text": "6 · 0,4",
+   "answer": "2,4"
+  },
+  {
+   "id": "4a",
+   "kind": "number",
+   "text": "0,5 · 2",
+   "answer": "1"
+  },
+  {
+   "id": "4b",
+   "kind": "number",
+   "text": "0,05 · 2",
+   "answer": "0,1"
+  },
+  {
+   "id": "5a",
+   "kind": "number",
+   "text": "3 · 0,7",
+   "answer": "2,1"
+  },
+  {
+   "id": "5b",
+   "kind": "number",
+   "text": "3 · 0,07",
+   "answer": "0,21"
+  },
+  {
+   "id": "6a",
+   "kind": "number",
+   "text": "25 · 0,1",
+   "answer": "2,5"
+  },
+  {
+   "id": "6b",
+   "kind": "number",
+   "text": "25 · 0,01",
+   "answer": "0,25"
+  },
+  {
+   "id": "7a",
+   "kind": "number",
+   "text": "8 · 0,6",
+   "answer": "4,8"
+  },
+  {
+   "id": "7b",
+   "kind": "number",
+   "text": "8 · 0,06",
+   "answer": "0,48"
+  },
+  {
+   "id": "8a",
+   "kind": "number",
+   "text": "0,3 · 20",
+   "answer": "6"
+  },
+  {
+   "id": "8b",
+   "kind": "number",
+   "text": "0,3 · 200",
+   "answer": "60"
+  },
+  {
+   "id": "9a",
+   "kind": "number",
+   "text": "5 · 0,7",
+   "answer": "3,5"
+  },
+  {
+   "id": "9b",
+   "kind": "number",
+   "text": "50 · 0,7",
+   "answer": "35"
+  },
+  {
+   "id": "10a",
+   "kind": "number",
+   "text": "0,03 · 2",
+   "answer": "0,06"
+  },
+  {
+   "id": "10b",
+   "kind": "number",
+   "text": "0,03 · 20",
+   "answer": "0,6"
+  },
+  {
+   "id": "11a",
+   "kind": "number",
+   "text": "4 · 0,08",
+   "answer": "0,32"
+  },
+  {
+   "id": "11b",
+   "kind": "number",
+   "text": "40 · 0,08",
+   "answer": "3,2"
+  },
+  {
+   "id": "12a",
+   "kind": "number",
+   "text": "0,9 · 6",
+   "answer": "5,4"
+  },
+  {
+   "id": "12b",
+   "kind": "number",
+   "text": "0,09 · 6",
+   "answer": "0,54"
+  },
+  {
+   "id": "13a",
+   "kind": "number",
+   "text": "40 · 0,02",
+   "answer": "0,8"
+  },
+  {
+   "id": "13b",
+   "kind": "number",
+   "text": "40 · 0,2",
+   "answer": "8"
+  },
+  {
+   "id": "14a",
+   "kind": "number",
+   "text": "0,6 · 30",
+   "answer": "18"
+  },
+  {
+   "id": "14b",
+   "kind": "number",
+   "text": "0,6 · 300",
+   "answer": "180"
+  },
+  {
+   "id": "15a",
+   "kind": "number",
+   "text": "45 · 0,2",
+   "answer": "9"
+  },
+  {
+   "id": "15b",
+   "kind": "number",
+   "text": "45 · 0,02",
+   "answer": "0,9"
+  },
+  {
+   "id": "16a",
+   "kind": "number",
+   "text": "50 · 0,9",
+   "answer": "45"
+  },
+  {
+   "id": "16b",
+   "kind": "number",
+   "text": "500 · 0,9",
+   "answer": "450"
+  }
+ ]
+}

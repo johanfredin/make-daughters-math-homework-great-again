@@ -2,7 +2,7 @@ import { test } from "node:test"
 import assert from "node:assert/strict"
 import { readFileSync, readdirSync, existsSync } from "node:fs"
 import { validateWorld } from "../../site/js/engine/world.js"
-import { SLOTS } from "../tasks/fixtures.js"
+import { validateSheet } from "../../site/js/engine/sheet.js"
 
 const root = new URL("../../site/worlds/", import.meta.url)
 const index = JSON.parse(readFileSync(new URL("index.json", root), "utf8"))
@@ -29,7 +29,13 @@ test("level sources point at real homework sheets", () => {
   }
 })
 
-test("the test fixture equals the kap1 level slots", () => {
-  const w = JSON.parse(readFileSync(new URL("kap1/world.json", root), "utf8"))
-  assert.deepEqual(w.nodes.find((n) => n.id === "multiplikation").tasks, SLOTS)
+test("0003: every playable level's sheet file exists and is valid", () => {
+  for (const { path } of index.worlds) {
+    const base = new URL(path, root)
+    const w = JSON.parse(readFileSync(base, "utf8"))
+    for (const n of w.nodes.filter((n) => n.kind === "level" && n.playable)) {
+      const sheet = JSON.parse(readFileSync(new URL(n.sheet, base), "utf8"))
+      assert.deepEqual(validateSheet(sheet), [], n.id)
+    }
+  }
 })

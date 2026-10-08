@@ -1,0 +1,107 @@
+{
+ "intro": "Du behöver inte räkna ut svaret. Välj det alternativ som ger rätt svar.",
+ "sections": [
+  [
+   "1",
+   "2",
+   "3",
+   "4"
+  ],
+  [
+   "5",
+   "6",
+   "7",
+   "8"
+  ]
+ ],
+ "tasks": [
+  {
+   "id": "1",
+   "kind": "choice",
+   "prompt": "Jesper och hans fyra kompisar har vunnit 23 460 kr på tips. Hur mycket får var och en om alla ska få lika mycket?",
+   "options": [
+    "23 460 / 5",
+    "23 460 / 4",
+    "23 460 / 3"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2",
+   "kind": "choice",
+   "prompt": "Linnea betalar 4 975 kr i hyra varje månad. Hur mycket hyra betalar hon på ett år?",
+   "options": [
+    "4 975 / 12",
+    "12 · 4 975",
+    "10 · 4 975"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "3",
+   "kind": "choice",
+   "prompt": "En järnvägsvagn med last väger 52 ton. Vagnen tom väger 27 500 kg. Hur mycket väger lasten?",
+   "options": [
+    "27 500 − 52",
+    "52 / 27,5",
+    "52 − 27,5"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "4",
+   "kind": "choice",
+   "prompt": "Joakims bil drar 0,8 liter per mil när han kör med hastigheten 80 km/h. Hur mycket drar bilen på 60 mil?",
+   "options": [
+    "60 / 0,8",
+    "80 · 0,8",
+    "60 · 0,8"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "5",
+   "kind": "choice",
+   "prompt": "Finlands area är 340 000 km² och folkmängden uppgår till 5,4 miljoner invånare. Hur många bor i genomsnitt per kvadratkilometer?",
+   "options": [
+    "340 000 / 5,4",
+    "5 400 000 / 340 000",
+    "340 / 5,4"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "6",
+   "kind": "choice",
+   "prompt": "Frankrike har 66 miljoner och Sverige 10 miljoner invånare. Hur många gånger fler invånare har Frankrike än Sverige?",
+   "options": [
+    "66 / 10",
+    "66 − 10",
+    "56 / 10"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "7",
+   "kind": "choice",
+   "prompt": "En vecka är 7 dygn. Ett dygn är 24 timmar och en timme är 60 minuter. Hur många minuter är en vecka?",
+   "options": [
+    "24 · 60 / 7",
+    "24 · 7 + 60",
+    "7 · 24 · 60"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "8",
+   "kind": "choice",
+   "prompt": "På ett bageri bakade man en dag 300 limpor. Till det gick det åt 130 kg mjöl. Nästa dag bakade man 400 limpor. Hur mycket mjöl gick det åt då?",
+   "options": [
+    "300 · 130 / 400",
+    "400 · 130 / 300",
+    "300 · 400 / 130"
+   ],
+   "answer": 1
+  }
+ ]
+}
