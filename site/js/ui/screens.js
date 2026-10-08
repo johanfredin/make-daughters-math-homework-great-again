@@ -283,8 +283,10 @@ export function breakdownPanel(panel, v) {
   if (step.kind === "choose" && step.columns) {
     const c = step.columns
     const maxEnd = Math.max(...c.ends, c.from?.end ?? -2)
+    // 7+ columns (e.g. 1,4 · 1 000) use smaller boxes so the rows fit a 1024 px desktop panel
+    const many = columnRange(c.digits, maxEnd, c.minPos ?? -2).length >= 7
     panel.append(
-      h("div", { className: "options" }, columnHeader(c, maxEnd), c.from ? columnFrom(c, maxEnd) : null, step.options.map((o, i) => columnOption(c, c.ends[i], maxEnd, o, () => v.onChoose(i)))),
+      h("div", { className: many ? "options pv-many" : "options" }, columnHeader(c, maxEnd), c.from ? columnFrom(c, maxEnd) : null, step.options.map((o, i) => columnOption(c, c.ends[i], maxEnd, o, () => v.onChoose(i)))),
     )
   } else if (step.kind === "choose") {
     panel.append(h("div", { className: "options" }, step.options.map((o, i) => button(o, () => v.onChoose(i), "btn btn-option"))))
