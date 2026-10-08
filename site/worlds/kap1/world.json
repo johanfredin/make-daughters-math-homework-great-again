@@ -11,7 +11,7 @@
     {
       "id": "multiplikation", "kind": "level", "x": 72, "y": 88,
       "name": "Multiplikation med decimaltal", "source": "sources/kap1/multiply-decimals.png",
-      "playable": true, "startUnlocked": true, "foe": "rat",
+      "playable": true, "foe": "rat",
       "tasks": [
         { "type": "decimal-multiply", "whole": { "from": 2, "to": 9 }, "decimal": "0,d" },
         { "type": "decimal-multiply", "whole": { "from": 2, "to": 9 }, "decimal": "0,0d" },

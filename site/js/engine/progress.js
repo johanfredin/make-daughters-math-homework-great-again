@@ -1,6 +1,6 @@
 // Saved progress (R8, R16): pure state helpers plus a thin, never-throwing storage adapter.
 // Keys earned = levels cleared (one key per level). Storage is passed in (localStorage in the browser).
-import { levels, nodeById, startNode } from "./world.js"
+import { levels, startNode } from "./world.js"
 
 export const STORAGE_KEY = "mattespel.v1"
 export const VERSION = 1
@@ -40,8 +40,8 @@ export function validate(obj, world) {
     Number.isInteger(obj.fur) && obj.fur >= 0 && obj.fur < FUR_COUNT &&
     (obj.name === null || (typeof obj.name === "string" && obj.name.length <= MAX_NAME))
   if (!ok) return null
-  const { version, worldId, nodeId, visited, cleared, unlocked, levelTask, fur, name } = obj
-  return { version, worldId, nodeId, visited, cleared, unlocked, levelTask, fur, name }
+  const { version, worldId, nodeId, visited, cleared, levelTask, fur, name } = obj
+  return { version, worldId, nodeId, visited, cleared, unlocked: [], levelTask, fur, name } // old unlock lists are ignored (0002 R4)
 }
 
 /** → { state, reset }. reset is true when a save existed but could not be used (show a message). */
@@ -91,31 +91,28 @@ export function clear(storage) {
 
 export const keys = (state) => state.cleared.length
 
-export function isUnlocked(world, state, levelId) {
-  return Boolean(nodeById(world, levelId)?.startUnlocked) || state.unlocked.includes(levelId)
-}
+/** A level that is not built yet: shown with a sign post, "Kommer snart" when she goes in (0002 R1). */
+export const isComingSoon = (node) => node.kind === "level" && !node.playable
 
-/** Shown with a lock on the map. Not-yet-built levels stay locked ("Kommer snart"). */
+/** Shown with a padlock on the map. Since 0002 only the boss can be locked (all levels are open). */
 export function isLocked(world, state, node) {
-  if (node.kind === "level") return !node.playable || !isUnlocked(world, state, node.id)
-  if (node.kind === "boss") return keys(state) < world.keysToBoss
-  return false
+  return node.kind === "boss" && keys(state) < world.keysToBoss
 }
 
-/** For world.tryMove: why the cat may not walk to `node`, or null. */
-export function blockedReason(world, state) {
-  return (node) => (!isLocked(world, state, node) ? null : node.kind === "boss" ? "bossLocked" : "comingSoon")
+/** Why she may not go *into* `node`: "comingSoon" | "bossLocked" | null. Walking is never blocked. */
+export function enterReason(world, state) {
+  return (node) => (isComingSoon(node) ? "comingSoon" : isLocked(world, state, node) ? "bossLocked" : null)
 }
 
-/** → { state, keyAwarded }. The next level in journey order gets unlocked. */
+/**
+ * → { state, keyAwarded }. `unlocked` stays in saved data (always empty, never read) so that 0001 code,
+ * which requires the field, can still read 0002 saves after a rollback.
+ */
 export function clearLevel(world, state, levelId) {
   const levelTask = { ...state.levelTask }
   delete levelTask[levelId]
   if (state.cleared.includes(levelId)) return { state: { ...state, levelTask }, keyAwarded: false }
-  const order = levels(world).map((n) => n.id)
-  const next = order[order.indexOf(levelId) + 1]
-  const unlocked = next && !state.unlocked.includes(next) ? [...state.unlocked, next] : state.unlocked
-  return { state: { ...state, cleared: [...state.cleared, levelId], unlocked, levelTask }, keyAwarded: true }
+  return { state: { ...state, cleared: [...state.cleared, levelId], levelTask }, keyAwarded: true }
 }
 
 export function moveTo(state, nodeId) {

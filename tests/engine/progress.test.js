@@ -21,32 +21,38 @@ const throwingStorage = {
   removeItem() { throw new Error("SecurityError") },
 }
 
-test("AC3: a fresh game has 6 of 7 levels locked and 0 keys", () => {
+// 0002 replaces 0001's "6 of 7 levels locked" (R1: no unlocking order any more).
+test("0002 AC1: no level is locked by order; 6 unbuilt levels are coming soon; the den is locked", () => {
   const s = P.freshState(world)
-  const locked = levels(world).filter((n) => P.isLocked(world, s, n))
-  assert.equal(locked.length, 6)
-  assert.ok(!P.isLocked(world, s, world.nodes.find((n) => n.id === "multiplikation")))
+  assert.deepEqual(levels(world).filter((n) => P.isLocked(world, s, n)), [])
+  assert.equal(levels(world).filter((n) => P.isComingSoon(n)).length, 6)
+  assert.ok(!P.isComingSoon(world.nodes.find((n) => n.id === "multiplikation")))
+  assert.ok(P.isLocked(world, s, world.nodes.find((n) => n.kind === "boss")))
   assert.equal(P.keys(s), 0)
   assert.equal(s.nodeId, "start")
 })
 
-test("blockedReason: coming soon for locked levels, boss locked until all keys", () => {
+// 0002 replaces 0001's blockedReason (R2: it gates entering, not walking).
+test("0002: enterReason — coming soon for unbuilt levels, boss locked until all keys", () => {
   const s = P.freshState(world)
-  const reason = P.blockedReason(world, s)
+  const reason = P.enterReason(world, s)
   const node = (id) => world.nodes.find((n) => n.id === id)
   assert.equal(reason(node("rakna")), "comingSoon")
   assert.equal(reason(node("boss")), "bossLocked")
   assert.equal(reason(node("camp-mult")), null)
   assert.equal(reason(node("multiplikation")), null)
+  const allKeys = { ...s, cleared: levels(world).map((n) => n.id) }
+  assert.equal(P.enterReason(world, allKeys)(node("boss")), null)
 })
 
-test("AC5: clearing a level gives one key and unlocks the next level; replay gives no second key", () => {
+// 0002: the unlock assertion is gone with the unlock chain (R1); the key-once rule stays.
+test("AC5: clearing a level gives one key; replay gives no second key", () => {
   let s = P.freshState(world)
   let r = P.clearLevel(world, s, "multiplikation")
   assert.equal(r.keyAwarded, true)
   s = r.state
   assert.equal(P.keys(s), 1)
-  assert.ok(s.unlocked.includes("blandad-form"))
+  assert.deepEqual(s.unlocked, [], "unlocked is kept for old code but never written")
   r = P.clearLevel(world, s, "multiplikation")
   assert.equal(r.keyAwarded, false)
   assert.equal(P.keys(r.state), 1)
@@ -62,6 +68,24 @@ test("save → load round-trips", () => {
   const { state, reset } = P.load(storage, world)
   assert.equal(reset, false)
   assert.deepEqual(state, s)
+})
+
+test("0002 AC4: a save from 0001 (with unlocked) loads with keys and position kept", () => {
+  const save0001 = {
+    version: 1, worldId: "kap1", nodeId: "multiplikation", visited: ["start", "camp-mult", "multiplikation"],
+    cleared: ["multiplikation"], unlocked: ["blandad-form"], levelTask: {}, fur: 1, name: "Misse",
+  }
+  const { state, reset } = P.load(memoryStorage({ [P.STORAGE_KEY]: JSON.stringify(save0001) }), world)
+  assert.equal(reset, false)
+  assert.equal(P.keys(state), 1)
+  assert.equal(state.nodeId, "multiplikation")
+  assert.equal(state.name, "Misse")
+})
+
+test("0002: saves keep an unlocked array so 0001 code could still read them (rollback safety)", () => {
+  const storage = memoryStorage()
+  P.save(storage, P.clearLevel(world, P.freshState(world), "multiplikation").state)
+  assert.deepEqual(JSON.parse(storage.data[P.STORAGE_KEY]).unlocked, [])
 })
 
 test("AC14: corrupt, wrong-typed or unknown-version data starts fresh with reset = true", () => {

@@ -202,6 +202,21 @@ export const KEY = {
   ],
 }
 
+// Sign post for levels that are not built yet ("Kommer snart"), drawn instead of a padlock (0002 R1).
+export const SIGN = {
+  palette: { k: OUTLINE, w: "#d9b77a", W: "#a8834a", p: "#6b4426" },
+  rows: [
+    "kkkkkkk",
+    "kwwwwwk",
+    "kwWWWwk",
+    "kwwwwwk",
+    "kkkpkkk",
+    "...p...",
+    "...p...",
+    "..kkk..",
+  ],
+}
+
 export const LEAF = {
   palette: { k: "#1b2a1b", g: "#5fb04e", G: "#8fd27a" },
   rows: ["...kk", "..kGk", ".kGgk", "kggk.", "kkk.."],
@@ -229,7 +244,7 @@ export function allSprites() {
     ...Object.fromEntries(CAT_SIDE.map((rows, i) => [`catSide${i}`, { rows, palette: cat }])),
     ...Object.fromEntries(CAT_FRONT.map((rows, i) => [`catFront${i}`, { rows, palette: cat }])),
     ...Object.fromEntries(CAT_BACK.map((rows, i) => [`catBack${i}`, { rows, palette: cat }])),
-    RAT, FOX_FACE, TREE, TENT, DEN, LOCK, LEAF, KEY,
+    RAT, FOX_FACE, TREE, TENT, DEN, LOCK, LEAF, KEY, SIGN,
   }
 }
 

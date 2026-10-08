@@ -107,10 +107,8 @@ function placeCatOn(node) {
 
 function onDirection(angle) {
   if (app.mode !== "map" || app.walk) return
-  const r = tryMove(app.world, app.state.nodeId, angle, P.blockedReason(app.world, app.state))
+  const r = tryMove(app.world, app.state.nodeId, angle)
   if (r.move) startWalk(r.move)
-  else if (r.blocked === "bossLocked") toast(T.map.bossLocked(P.keys(app.state), app.world.keysToBoss))
-  else if (r.blocked) toast(T.map.comingSoon)
   else app.bumpUntil = performance.now() + 250
 }
 
@@ -139,13 +137,11 @@ function arrive() {
 function onEnter() {
   if (app.mode !== "map" || app.walk) return
   const node = currentNode()
-  if (node.kind === "level") {
-    if (P.isLocked(app.world, app.state, node)) toast(T.map.comingSoon)
-    else enterLevel(node)
-  } else if (node.kind === "camp") enterCamp(node)
-  else if (node.kind === "boss" && P.isLocked(app.world, app.state, node)) {
-    toast(T.map.bossLocked(P.keys(app.state), app.world.keysToBoss))
-  }
+  const reason = P.enterReason(app.world, app.state)(node)
+  if (reason === "comingSoon") toast(T.map.comingSoon)
+  else if (reason === "bossLocked") toast(T.map.bossLocked(P.keys(app.state), app.world.keysToBoss))
+  else if (node.kind === "level") enterLevel(node)
+  else if (node.kind === "camp") enterCamp(node)
 }
 
 function toMap() {
@@ -405,6 +401,7 @@ function frame(now) {
       scene.drawMap({
         world: app.world,
         isLocked: (n) => P.isLocked(app.world, app.state, n),
+        isComingSoon: P.isComingSoon,
         isCleared: (n) => app.state.cleared.includes(n.id),
         cat: app.cat,
         bossLabel: `${P.keys(app.state)}/${app.world.keysToBoss}`,
