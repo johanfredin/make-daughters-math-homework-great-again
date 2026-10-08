@@ -1,10 +1,10 @@
 ---
 id: 0002-unlocked-maps-and-faster-help
 stage: spec
-status: draft        # draft -> approved (human only, via scripts/approve.sh)
+status: approved
 intent: docs/changes/0002-unlocked-maps-and-faster-help/intent.md
-approved_by:
-approved_at:
+approved_by: Johan Fredin
+approved_at: 2026-10-08T16:37:35+02:00
 ---
 
 # Spec: unlocked maps and faster help
