@@ -56,7 +56,13 @@ The player is in 7th grade (årskurs 7) in a Swedish school.
 - **Short sessions:**
   - A level takes about 3–6 minutes and has 5–8 tasks.
   - Progress is saved after every task.
-- **Difficulty ramp:** inside a level, start easier than the sheet and end at the sheet's level.
+- **Same vintage as the sheet** (owner rule). The numbers differ from the sheet, but the difficulty
+  matches it:
+  - **Never harder.** Use no more digits, decimals or carrying than the sheet shows.
+  - **At most slightly easier.** An easier opener is fine, but it must be a pattern that appears on
+    the sheet.
+  - Derive each task spec's ranges from concrete examples on the sheet, and cite them in the spec.
+    Tests assert the generated numbers stay inside those patterns.
 - **Mix in tables:** sneak in quick table facts (e.g. 7 · 8) where a decimal task depends on them, so
   her weak spot gets practice without feeling like drill.
 
@@ -84,7 +90,7 @@ The player is in 7th grade (årskurs 7) in a Swedish school.
   Use varied names, and none of the names from her class.
 
 ## Touch & layout
-- Phone and tablet first; works in portrait and landscape.
+- iPad (touch) and desktop first; works in portrait and landscape. Phones are not a target.
 - Tap targets ≥ 44 px. Nothing relies on hover.
 - Use a custom on-screen number pad (0–9, `,`, `−`, ⌫, OK) so the phone keyboard never covers the task.
 - Large, readable numbers. Good contrast. Respect `prefers-reduced-motion`.

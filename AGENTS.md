@@ -18,6 +18,7 @@ test material into a playful journey, so practising feels like playing, not like
 - **One level per homework sheet** (each image in `sources/<chapter>/`).
   - A level has a *small* number of tasks: about 5–8, never the whole sheet.
   - Tasks are of the *same type* as the sheet, with fresh numbers (`12 + 11` may become `13 + 9`).
+  - Difficulty is of the same vintage as the sheet: never harder, and at most slightly easier.
 - **Keys:** clearing a level gives a key. All keys in a world unlock the **final boss**.
   - The boss is a last mixed challenge.
   - Beating it shows a summary of everything she cleared in the world.
@@ -30,12 +31,13 @@ test material into a playful journey, so practising feels like playing, not like
   - Mistakes give a hint and another try.
   - Short sessions should feel complete.
 
-## Stack (proposed — to be confirmed in the spec of change 0001)
+## Stack (set by change 0001)
 - **Static site, no backend.** Plain HTML + CSS + vanilla JavaScript (ES modules).
   - No framework and no build step, so the deployed files are the source files.
 - **DOM for UI and tasks:** text, buttons and number input stay crisp, accessible and touch-friendly.
 - **SVG / `<canvas>` for the world map and animations.**
-- **Touch first:** must work well on a tablet or phone, as well as with a mouse and keyboard.
+- **Touch first, iPad + desktop:** must work well on an iPad (touch) and on a computer (mouse + keyboard).
+  Phones are not a target (owner, 2026-10-08): do not spend effort on phone layouts.
 - **Progress** is saved in `localStorage` on her device. No accounts and no server.
 - **Hosting:** GitHub Pages from this public repo, serving `site/`. She just opens a link; there is no
   file to send around. Change 0001 sets up the deploy.
@@ -47,14 +49,15 @@ test material into a playful journey, so practising feels like playing, not like
 | Purpose | Command |
 |---------|---------|
 | Verify everything (use this) | `./scripts/verify.sh` |
-| Test | `node --test tests/` |
+| Test | `node --test 'tests/**/*.test.js'` |
 | Run locally | `python3 -m http.server -d site 8000` → http://localhost:8000 (ES modules need http://, not file://) |
+| Live | https://johanfredin.github.io/make-daughters-math-homework-great-again/ (deployed by `.github/workflows/pages.yml` on push to `main`) |
 | Start a change | `./scripts/new-change.sh "short title"` |
 | Approve an artifact (human) | `./scripts/approve.sh <id> <intent\|spec\|plan>` |
 
 `scripts/verify.sh` is the single source of truth for "is this change done". Extend it as the stack grows.
 
-## Architecture (target — refined by change specs)
+## Architecture
 ```
 site/                  deployed as-is (static hosting root)
   index.html
@@ -92,8 +95,8 @@ docs/                  SDLC artifacts (changes, lessons, templates)
   approves it.
 - The photos in `sources/` are input for content design, not game assets. They may be public in the
   repo, but are not copied into `site/`.
-- The owner makes commits himself for now. Claude stages and proposes a commit message, but does not
-  run `git commit` unless asked.
+- Claude may commit on `change/<id>` branches. It pushes only after asking the owner and getting a
+  yes, and never force-pushes. Merging is the owner's.
 
 ## SDLC workflow (AI-native)
 Every non-trivial change goes through `docs/changes/<id>/`, in its own worktree `.worktrees/<id>/`
@@ -121,4 +124,6 @@ Rules for agents:
 - Before claiming done, run `./scripts/verify.sh` and include its result.
 
 ## Known pitfalls
-- (none yet)
+- `node --test tests/` fails on Node 22 (a directory is not a test file). Use a glob: `node --test 'tests/**/*.test.js'`, or just `./scripts/verify.sh`.
+- The CSP blocks inline styles: set dynamic sizes with `el.style.x = …` (CSSOM), never `setAttribute("style", …)` or `style=` in HTML.
+- Player-facing text outside `site/js/ui/text-sv.js` fails `tests/site/structure.test.js`, and so does Swedish text in a JS *string*. Comments are fine.

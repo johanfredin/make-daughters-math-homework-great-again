@@ -14,6 +14,13 @@ if [[ -d site ]]; then
     [[ -z $leaked ]] || fail "files that must not be deployed: $leaked"
 fi
 
+echo "==> syntax check (site/js)"
+if [[ -d site/js ]]; then
+    while IFS= read -r -d '' f; do
+        node --check "$f" || fail "syntax error in $f"
+    done < <(find site/js -name '*.js' -print0)
+fi
+
 echo "==> unit tests"
 mapfile -t tests < <(find tests -type f \( -name '*.test.js' -o -name '*.test.mjs' \) 2>/dev/null | sort)
 if (( ${#tests[@]} == 0 )); then

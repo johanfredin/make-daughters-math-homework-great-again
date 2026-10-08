@@ -33,10 +33,10 @@ Until an intent is approved, do nothing for that change unless asked.
   homework content on the images in `sources/` (or their `inventory.md`).
 - Put decisions that belong to the owner under *Policy concerns flagged* or *Open questions*. That
   includes pedagogy and game-feel choices, not only technical ones.
-- New artifacts start with `status: draft`. Then tell the owner they are ready to approve.
-- Commits: wherever a skill says "commit", for now stage the files and propose the message (e.g.
-  `[<id>] spec`) instead; the owner commits. Note that `approve.sh` commits by itself and needs the
-  artifact to be committed or staged first.
+- New artifacts start with `status: draft`. Commit them on `change/<id>` as `[<id>] spec` or
+  `[<id>] plan`, then tell the owner they are ready to approve.
+- Claude commits freely, but **pushes only after asking** the owner (`git push` is an `ask`
+  permission). It never force-pushes.
 
 ## Approval
 - The owner approves with `./scripts/approve.sh <id> <stage>` (the watcher picks it up), or by telling

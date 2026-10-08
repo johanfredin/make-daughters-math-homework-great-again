@@ -7,10 +7,12 @@ boss at the end of the world.
 Built with an AI-native SDLC driven by Claude Code. See `AGENTS.md` (project context) and `CLAUDE.md`
 (how Claude drives the pipeline).
 
+**Play:** https://johanfredin.github.io/make-daughters-math-homework-great-again/
+
 ## Quick start
 ```bash
 ./scripts/verify.sh                          # is everything green?
-python3 -m http.server -d site 8000          # play locally at http://localhost:8000 (once site/ exists)
+python3 -m http.server -d site 8000          # play locally at http://localhost:8000
 ```
 
 ## Workflow
@@ -40,4 +42,5 @@ python3 -m http.server -d site 8000          # play locally at http://localhost:
 | `docs/templates/`, `docs/changes/`, `docs/lessons/` | SDLC artifacts |
 | `scripts/` | `verify.sh`, `approve.sh` (human only), `new-change.sh` |
 | `sources/` | Homework photos + `inventory.md` per chapter (never deployed) |
-| `site/` | The game (static, deployed as-is), created by change 0001 |
+| `site/` | The game (static, deployed as-is to GitHub Pages) |
+| `.github/workflows/pages.yml` | Verify, then deploy `site/` on every push to `main` |
