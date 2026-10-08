@@ -220,6 +220,32 @@ padlock is kept only for the den.
   under *Alternatives*. The split strategy stays.
 - **2026-10-08 Claude:** keep save version 1, accept and ignore `unlocked`, so her progress survives
   this update.
+- **2026-10-08 Owner (chat, after review; amends R7, R8 and adds R12):** the reviewer found that step 3
+  for hundredths could only be solved by counting decimals, and that the options could have up to
+  4 decimals. The owner chose:
+  1. **Hundredths, step 3 = column picture.**
+     - Each option is the digits of the count (e.g. 24, or 60) placed in the place-value boxes, ending in
+       a different column. The hundredths box is highlighted.
+     - Help: "Hundradelar står i andra rutan efter kommat. Sista siffran i 24 ska stå där." ("Hundredths
+       are in the second box after the comma. The last digit of 24 must be there.")
+     - Options: answer, ×10 and ×100 (`0,24 / 2,4 / 24`; for 60 hundredths `0,6 / 6 / 60`).
+     - The 10×10 bar is dropped for hundredths (R8 now covers tenths only).
+  2. **Options = likely mistakes**, never more than 2 decimals (like the sheet), in size order.
+     - Tenths: ÷10, answer, ×10 (`0,6 / 6 / 60`). The ×10 option is the count she forgot to turn back
+       into a number.
+     - Hundredths: answer, ×10, ×100 (`0,24 / 2,4 / 24`).
+     - So the position depends on the unit (tenths: middle, hundredths: first).
+  3. **R12 (new), walking:** the cat stops on every stone, and each push walks one stone. A push made
+     while the cat is still walking is remembered and done on arrival, so input is never lost. Key
+     auto-repeat does not walk.
+- **2026-10-08 Claude (review, recorded):**
+  - Tenths step-3 help is worded "Tio tiondelar blir en hel. Hur många hela blir 60 tiondelar?",
+    with numbers in words so a digit can't give away an answer of 1.
+  - When the answer *is* 1 (`0,5 · 2`), the tenths help and bar state it outright. This is accepted
+    as scaffolding (reviewer: minor).
+  - The split strategy is now used only for halves (`n,5`); any other decimal ≥ 1 uses units.
+  - Saves keep an always-empty `unlocked` array for rollback safety (plan *Risks*).
+  - `bar` is the unit key string `"tenths"`.
 
 ## Open questions
 1. Should the hint after a wrong answer also *point at* the "Dela upp det" button, for example with a
