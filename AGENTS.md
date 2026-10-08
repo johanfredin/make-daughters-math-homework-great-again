@@ -129,3 +129,4 @@ Rules for agents:
 - `node --test tests/` fails on Node 22 (a directory is not a test file). Use a glob: `node --test 'tests/**/*.test.js'`, or just `./scripts/verify.sh`.
 - The CSP blocks inline styles: set dynamic sizes with `el.style.x = …` (CSSOM), never `setAttribute("style", …)` or `style=` in HTML.
 - Player-facing text outside `site/js/ui/text-sv.js` fails `tests/site/structure.test.js`, and so does Swedish text in a JS *string*. Comments are fine.
+- Headless Chrome plays the game's sound effects out loud on the owner's machine. Always launch it with `--mute-audio`.

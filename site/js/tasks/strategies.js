@@ -3,7 +3,7 @@
 // then pick the right number — and never says "move the comma n steps". Pure; exact maths via decimal.js.
 //
 // strategyFor(text) → { strategy, expr, answer, steps, summary } | null (not handled)
-import { dec, add, sub, mul, eq, cmp, shift, decimals, isInteger, normalise, digits, toPlain } from "../engine/decimal.js"
+import { dec, add, sub, mul, cmp, shift, decimals, isInteger, normalise, digits, toPlain } from "../engine/decimal.js"
 import { formatNumber as f, parseAnswer, MINUS } from "../ui/number-format.js"
 import { T } from "../ui/text-sv.js"
 import { unitsChoice, unitWord, unitKeyFor, breakdownOf } from "./units.js"
@@ -117,19 +117,19 @@ function negative(a, op, b, r) {
   if (isNeg(b)) return null
   return [
     { kind: "choose", prompt: B.directionPrompt, help: B.directionHelp, options: B.directionOptions, answerIndex: op === "+" ? 0 : 1, visual: [] },
-    { kind: "number", prompt: B.walkPrompt(f(a), f(b), op === "+" ? B.directions.right : B.directions.left), help: B.walkHelp, answer: r, visual: [] },
+    { kind: "number", prompt: B.walkPrompt(f(a), f(b), op === "+" ? B.directions.right : B.directions.left), help: op === "+" ? B.walkHelp.right : B.walkHelp.left, answer: r, visual: [] },
   ]
 }
 
 /** 3+ numbers with + and −: one part at a time, left to right. */
 function chain(values, ops) {
   if (!ops.every((o) => o === "+" || o === "-")) return null
-  const anyDecimal = values.some((v) => !isInteger(v))
+  const k = Math.max(...values.map(decimals))
   const steps = []
   let acc = values[0]
   ops.forEach((op, i) => {
     const next = apply(acc, op, values[i + 1])
-    const help = anyDecimal ? B.chainHelp.decimals : op === "+" ? B.chainHelp.plus : B.chainHelp.minus
+    const help = k > 0 ? B.chainHelp.decimals(B.units[unitKeyFor(k)].many) : op === "+" ? B.chainHelp.plus : B.chainHelp.minus
     steps.push({ kind: "number", prompt: B.calcPrompt(f(acc), sym(op), f(values[i + 1])), help, answer: next, visual: [] })
     acc = next
   })
@@ -154,7 +154,8 @@ function scale(op, value, power, expr) {
     {
       kind: "choose",
       prompt: question(expr),
-      help: B.scaleWhichHelp[kind](f(power), B.powerWords[p], B.boxes[k]),
+      // tiondelar blir tiotal (·100) / ental blir hundradelar (/100): name the columns, don't count boxes
+      help: B.scaleWhichHelp[kind](f(power), B.powerWords[p], ...(times ? [B.plainPlaceNames[-1], B.plainPlaceNames[-1 + k]] : [B.plainPlaceNames[0], B.plainPlaceNames[-k]])),
       options: shifts.map((s) => f(shift(answer, s))),
       answerIndex: shifts.indexOf(0),
       answer,
@@ -177,7 +178,7 @@ function decimalTimesDecimal(a, b) {
   const first = name(ka)
   return [
     { kind: "number", prompt: B.calcPrompt(f(da), "·", f(db)), help: B.tableFactHelp, answer: fact, visual: [a, b] },
-    { kind: "choose", prompt: B.unitTimesUnitPrompt(first[0].toUpperCase() + first.slice(1), name(kb)), help: B.unitTimesUnitHelp, options: B.unitTimesUnitOptions, answerIndex: ka + kb - 1, visual: [] },
+    { kind: "choose", prompt: B.unitTimesUnitPrompt(first[0].toUpperCase() + first.slice(1), name(kb)), help: B.unitTimesUnitHelp(B.units[unitKeyFor(Math.max(ka, kb))].one), options: B.unitTimesUnitOptions, answerIndex: ka + kb - 1, visual: [] },
     unitsChoice(fact, unitKey),
   ]
 }
@@ -219,11 +220,11 @@ function wholeDivide(a, b, r) {
   if (z > 0) {
     const a2 = dec(num(a) / 10 ** z)
     const b2 = dec(num(b) / 10 ** z)
-    const tooFew = `${f(shift(a2, 1))} / ${f(b2)}`
+    const timesTen = `${f(shift(a2, 1))} / ${f(b2)}` // struck one zero too few in the dividend
     const right = `${f(a2)} / ${f(b2)}`
     const onlyOne = `${f(a2)} / ${f(b)}`
     return [
-      { kind: "choose", prompt: B.cancelPrompt(`${f(a)} / ${f(b)}`), help: B.cancelHelp, options: [right, onlyOne, tooFew], answerIndex: 0, visual: [] },
+      { kind: "choose", prompt: B.cancelPrompt(`${f(a)} / ${f(b)}`), help: B.cancelHelp, options: [right, onlyOne, timesTen], answerIndex: 0, visual: [] },
       { kind: "number", prompt: B.calcPrompt(f(a2), "/", f(b2)), help: B.divideHelp(f(b2), f(a2)), answer: r, visual: [] },
     ]
   }

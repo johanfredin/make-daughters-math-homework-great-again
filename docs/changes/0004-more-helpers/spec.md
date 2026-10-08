@@ -33,7 +33,7 @@ in tiondelar/hundradelar, then pick the right number. No step tells her to "move
 | Kind | Example | Steps |
 |---|---|---|
 | decimal ± decimal/whole | `7,65 + 0,2` | 1. "Hur många hundradelar är 7,65?" → 765. 2. "… är 0,2?" → 20. 3. "765 + 20 = ? hundradelar" → 785. 4. choose 7,85 (column picture). Unit = the smallest needed (tiondelar or hundradelar). |
-| whole ± whole | `137 + 9`, `102 − 3`, `122 + 90` | Over a ten: 1. "137 + 3 = ?" → 140 (to the next ten). 2. "140 + 6 = ?" → 146. Otherwise split off the ones: 1. "120 + 90 = ?" → 210. 2. "210 + 2 = ?" → 212. |
+| whole ± whole | `137 + 9`, `102 − 3`, `122 + 90` | Over a ten: 1. "Hur långt är det från 137 upp till 140?" (How far is it from 137 up to 140?) → 3. 2. "140 + 6 = ?" → 146. *(Amended after review: the first step asks for the distance to the next ten.)* Otherwise split off the ones: 1. "120 + 90 = ?" → 210. 2. "210 + 2 = ?" → 212. |
 | with negatives | `−7 − 2`, `4 − 9` | 1. choose the direction on the number line: *höger* (right) / *vänster* (left). 2. "Börja på −7 och gå 2 steg åt vänster. Var hamnar du?" ("Start at −7 and go 2 steps left. Where do you end up?") → −9 |
 | chains (3+ numbers) | `0,7 + 0,7 + 0,7`, `3 − 8 − 2` | One step per part, left to right ("0,7 + 0,7 = ?" → 1,4; "1,4 + 0,7 = ?" → 2,1). The help depends on the operator and the sign. |
 | · or / by 10/100/1 000 | `100 · 0,76`, `45,3 / 10` | 1. choose "Blir svaret större eller mindre än 0,76?" ("Is the answer bigger or smaller than 0,76?") 2. choose the number in a column picture, with a dashed "from" row showing where the digits start. |
@@ -89,6 +89,13 @@ in tiondelar/hundradelar, then pick the right number. No step tells her to "move
   this change's artifacts under that delegation.
 - **2026-10-08 Claude:** strategies chosen per kind as in R2. They reuse the units/column-picture
   ideas from 0002 and the size check for ×/÷ 10/100/1 000.
+
+- **2026-10-08 Claude (review fixes):**
+  - The `137 + 9` row is amended to the built step ("how far to 140?" → 3), which makes the bridging
+    explicit.
+  - The help for "tiondelar gånger tiondelar blir …" no longer names the answer unit.
+  - The scale help names the columns ("tiondelar blir tiotal") instead of counting boxes.
+  - The leak test now also covers text answers.
 
 ## Open questions
 None blocking.

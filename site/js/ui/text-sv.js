@@ -137,35 +137,40 @@ export const T = {
     // negative numbers: the number line
     directionPrompt: "Åt vilket håll går du på tallinjen?",
     directionOptions: ["Åt höger", "Åt vänster"],
-    directionHelp: "Plus går åt höger och minus går åt vänster på tallinjen.",
+    directionHelp: "Är det plus eller minus före talet? Plus går mot större tal, minus mot mindre tal.",
     walkPrompt: (a, b, dir) => `Börja på ${a} och gå ${b} steg åt ${dir}. Var hamnar du?`,
     directions: { right: "höger", left: "vänster" },
-    walkHelp: "Räkna stegen ett i taget. Efter noll kommer minus ett, minus två och så vidare.",
+    walkHelp: {
+      right: "Gå ett steg i taget. Talen blir större för varje steg.",
+      left: "Gå ett steg i taget. Talen blir mindre för varje steg, och efter noll kommer minus ett, minus två …",
+    },
     // chains: one part at a time
     chainHelp: {
       plus: "Plus går åt höger på tallinjen.",
       minus: "Minus går åt vänster på tallinjen.",
-      decimals: "Räkna med tiondelar och hundradelar, precis som med hela tal.",
+      decimals: (unit) => `Räkna i ${unit}, precis som med hela tal.`,
     },
     // · and / by 10, 100, 1 000
     scaleBiggerPrompt: (x) => `Blir svaret större eller mindre än ${x}?`,
     scaleBiggerOptions: ["Större", "Mindre"],
     scaleBiggerHelp: {
-      times: (p) => `Tänk på 1 · ${p}. Blir det mer eller mindre än 1?`,
-      divide: (p) => `Tänk på 1 / ${p}. Blir det mer eller mindre än 1?`,
+      times: (p) => `Tänk på 1 · ${p}. Vad blir det?`,
+      divide: (p) => `Tänk på 1 / ${p}. Vad blir det?`,
     },
+    // anchored to column names, not to counting boxes (0004 review)
     scaleWhichHelp: {
-      times: (p, times, boxes) => `· ${p} gör talet ${times} gånger större. Varje siffra hamnar ${boxes} längre åt vänster.`,
-      divide: (p, times, boxes) => `/ ${p} gör talet ${times} gånger mindre. Varje siffra hamnar ${boxes} längre åt höger.`,
+      times: (p, times, from, to) => `· ${p} gör talet ${times} gånger större: ${from} blir ${to}.`,
+      divide: (p, times, from, to) => `/ ${p} gör talet ${times} gånger mindre: ${from} blir ${to}.`,
     },
+    plainPlaceNames: { 3: "tusental", 2: "hundratal", 1: "tiotal", 0: "ental", [-1]: "tiondelar", [-2]: "hundradelar", [-3]: "tusendelar" },
     powerWords: { 10: "tio", 100: "hundra", 1000: "tusen" },
-    boxes: { 1: "en ruta", 2: "två rutor", 3: "tre rutor" },
     // decimal · decimal and whole · whole
     tableFactHelp: "Börja med gångertabellen. Kommat tar vi sen.",
     tableFactWholeHelp: "Börja med gångertabellen. Nollorna tar vi sen.",
     unitTimesUnitPrompt: (u1, u2) => `${u1} gånger ${u2} blir …`,
     unitTimesUnitOptions: ["tiondelar", "hundradelar", "tusendelar"],
-    unitTimesUnitHelp: "En tiondel av en tiondel är en hundradel. En tiondel av en hundradel är en tusendel.",
+    // never names the answer unit (0004 review)
+    unitTimesUnitHelp: (part) => `Dela en ${part} i tio lika stora bitar. Hur stor del av en hel är en sådan bit?`,
     zerosHelp: (a, b, zeros, x) => `${a} och ${b} har ${zeros} tillsammans. Sätt dit lika många nollor efter ${x}.`,
     zeroWords: { 1: "en nolla", 2: "två nollor", 3: "tre nollor", 4: "fyra nollor", 5: "fem nollor" },
     // whole / whole and dividing by a decimal
@@ -198,7 +203,7 @@ export const T = {
     assembled: (expr, ans) => `${expr} = ${ans}`,
     doneTitle: "Där ser du, du klarade det!",
     // \u00ad = soft hyphen, so long names can wrap in narrow place-value columns
-    placeNames: { 3: "tusen\u00adtal", 2: "hundra\u00adtal", 1: "tiotal", 0: "ental", [-1]: "tion\u00addelar", [-2]: "hundra\u00addelar", [-3]: "tusen\u00addelar" },
+    placeNames: { 4: "tio\u00adtusen\u00adtal", 3: "tusen\u00adtal", 2: "hundra\u00adtal", 1: "tiotal", 0: "ental", [-1]: "tion\u00addelar", [-2]: "hundra\u00addelar", [-3]: "tusen\u00addelar" },
   },
 
   camp: {

@@ -99,6 +99,11 @@ test("0004 AC3: property — every breakdown ends in the answer, no help gives i
       assert.ok(s.prompt && s.help, `${where}: step without prompt/help`)
       const ans = stepAnswer(s)
       assert.ok(!numbersIn(s.help).includes(ans), `${where}: help "${s.help}" gives ${ans}`)
+      if (s.kind === "choose" && parseAnswer(ans) === null) {
+        // text answers (units, directions, Större/Mindre, "200 / 5"): the help must not name them either
+        const stem = ans.toLowerCase().replace(/^åt /, "").replace(/(ar|er|re)$/, "")
+        assert.ok(!s.help.toLowerCase().includes(stem), `${where}: help "${s.help}" names the answer "${ans}"`)
+      }
       if (s.kind === "number") {
         const inPrompt = numbersIn(s.prompt).includes(ans)
         for (const v of s.visual) assert.ok(inPrompt || !eq(v, s.answer), `${where}: visual gives the answer`)
@@ -113,6 +118,19 @@ test("0004 AC3: property — every breakdown ends in the answer, no help gives i
         }
         if (s.columns) assert.equal(s.columns.ends.length, s.options.length)
       }
+    }
+  }
+})
+
+import { T } from "../../site/js/ui/text-sv.js"
+import { columnRange } from "../../site/js/ui/place-value.js"
+
+test("0004: every column in every sheet column picture has a name (e.g. tiotusental for 14 000)", () => {
+  for (const t of TASKS.filter((x) => fixed.canBreakdown(x))) {
+    for (const s of fixed.breakdown(t).steps.filter((x) => x.columns)) {
+      const c = s.columns
+      const maxEnd = Math.max(...c.ends, c.from?.end ?? -2)
+      for (const pos of columnRange(c.digits, maxEnd, c.minPos ?? -2)) assert.ok(T.breakdown.placeNames[pos], `${t.sheet} ${t.id}: column ${pos} has no name`)
     }
   }
 })
