@@ -1,0 +1,5 @@
+{
+  "worlds": [
+    { "id": "kap1", "path": "kap1/world.json" }
+  ]
+}
