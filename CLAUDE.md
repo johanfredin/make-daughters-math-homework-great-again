@@ -35,7 +35,8 @@ Until an intent is approved, do nothing for that change unless asked.
   includes pedagogy and game-feel choices, not only technical ones.
 - New artifacts start with `status: draft`. Commit them on `change/<id>` as `[<id>] spec` or
   `[<id>] plan`, then tell the owner they are ready to approve.
-- Claude commits but **never pushes**. Pushing and merging are the owner's.
+- Claude commits freely, but **pushes only after asking** the owner (`git push` is an `ask`
+  permission). It never force-pushes.
 
 ## Approval
 - The owner approves with `./scripts/approve.sh <id> <stage>` (the watcher picks it up), or by telling
