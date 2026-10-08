@@ -43,3 +43,25 @@ test("only the row ending in hundredths has the count's last digit in the hundre
     assert.equal(last(0), "")
   }
 })
+
+// 0004: rows ending left of ental (760, 14 000) get trailing zeros; the picture can go down to tusendelar.
+const rowAt = (digits, endPos, maxEnd, minPos) => {
+  const cols = columnRange(digits, maxEnd, minPos)
+  return columnCells(digits, endPos, maxEnd, minPos)
+    .map((c, i) => (c || "_") + (cols[i] === 0 ? "," : ""))
+    .join("")
+}
+
+test("0004: trailing zeros left of ental: 76 → 7,6 / 76 / 760", () => {
+  assert.deepEqual(columnRange("76", 1), [2, 1, 0, -1, -2])
+  assert.equal(rowAt("76", -1, 1, -2), "__7,6_")
+  assert.equal(rowAt("76", 0, 1, -2), "_76,__")
+  assert.equal(rowAt("76", 1, 1, -2), "760,__")
+})
+
+test("0004: thousandths: 14 → 0,014 / 0,14 / 1,4; 457 → 0,457", () => {
+  assert.equal(rowAt("14", -3, 0, -3), "_0,014")
+  assert.equal(rowAt("14", -2, 0, -3), "_0,14_")
+  assert.equal(rowAt("14", -1, 0, -3), "_1,4__")
+  assert.equal(rowAt("457", -3, 0, -3), "__0,457")
+})

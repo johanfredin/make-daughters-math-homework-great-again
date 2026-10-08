@@ -17,7 +17,7 @@ You are an independent verifier. You did not write this code. Assume it is broke
    - For every task type touched, generate a batch of tasks (write a throwaway script in `/tmp`, never
      in the repo) and check the stored answers independently.
    - Check there is no floating-point noise such as `0,30000000000000004`.
-5. Where feasible, exercise the game for real:
+5. Where feasible, exercise the game for real (launch any headless Chrome with `--mute-audio`, or the game's sounds play on the owner's speakers):
    - Serve it with `python3 -m http.server -d site <port>` in the background, fetch the pages and
      check that the modules load.
    - If browser tools are available, play the changed level at a phone-sized viewport and report what
