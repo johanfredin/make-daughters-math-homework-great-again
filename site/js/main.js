@@ -14,6 +14,7 @@ import { FUR } from "./engine/sprites.js"
 import { T, oneOf } from "./ui/text-sv.js"
 import { formatNumber } from "./ui/number-format.js"
 import * as V from "./ui/screens.js"
+import { versioned } from "./engine/version.js"
 
 const $ = (id) => document.getElementById(id)
 const el = {
@@ -563,7 +564,7 @@ el.canvas.setAttribute("aria-label", T.map.mapLabel)
 new ResizeObserver(fitScene).observe(el.stage)
 
 async function fetchJson(url) {
-  const res = await fetch(url)
+  const res = await fetch(versioned(url))
   if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`)
   return res.json()
 }

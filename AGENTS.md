@@ -43,6 +43,10 @@ test material into a playful journey, so practising feels like playing, not like
 - **Progress** is saved in `localStorage` on her device. No accounts and no server.
 - **Hosting:** GitHub Pages from this public repo, serving `site/`. She just opens a link; there is no
   file to send around. Change 0001 sets up the deploy.
+  - The deploy stamps `?v=<sha>` onto the stylesheet, every module import and the JSON data
+    (`scripts/stamp-version.mjs`, `engine/version.js`), so a release never mixes old and new files.
+  - The deploy job refuses any commit that is not the current tip of `main`. **Re-running an old
+    Actions run fails on purpose**; to redeploy, re-run the newest run or push.
 - **Tests:** Node's built-in test runner (`node --test`), no npm dependencies, for pure logic:
   task generators, answer checking, progress and unlock rules, and world data validation.
   - Browser end-to-end tests (e.g. Playwright) only if a spec justifies the dependency.
@@ -130,3 +134,4 @@ Rules for agents:
 - The CSP blocks inline styles: set dynamic sizes with `el.style.x = …` (CSSOM), never `setAttribute("style", …)` or `style=` in HTML.
 - Player-facing text outside `site/js/ui/text-sv.js` fails `tests/site/structure.test.js`, and so does Swedish text in a JS *string*. Comments are fine.
 - Headless Chrome plays the game's sound effects out loud on the owner's machine. Always launch it with `--mute-audio`.
+- Module imports must be static and double-quoted (`import { x } from "./x.js"`), or the deploy's version stamp misses them; `tests/site/stamp.test.js` fails on any unstamped relative import. Fetch data with `versioned(url)` from `engine/version.js`.
