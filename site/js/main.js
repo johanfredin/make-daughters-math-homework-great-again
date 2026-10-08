@@ -306,7 +306,7 @@ function showCampMenu() {
   const node = app.campNode
   const practiceLevel = nodeById(app.world, node.practiceFrom)
   const standalone = (data, intro) => {
-    let run = { data, step: 0, tries: 0, finished: false }
+    let run = L.startBreakdown(data)
     runBreakdown({
       data,
       intro,

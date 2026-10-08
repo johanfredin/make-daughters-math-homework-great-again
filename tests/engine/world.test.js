@@ -31,6 +31,9 @@ test("AC16: removing a required field makes validation fail", () => {
     (w) => w.paths.push(["start", "ghost"]),
     (w) => (w.paths = w.paths.filter(([a, b]) => b !== "boss")),
     (w) => delete w.id,
+    (w) => (w.nodes[2].foe = "dragon"),
+    (w) => delete w.nodes.find((n) => n.kind === "camp").demo.type,
+    (w) => (w.nodes.find((n) => n.kind === "camp").demo.decimal = "abc"),
   ]
   for (const [i, mutate] of mutations.entries()) {
     const w = load()

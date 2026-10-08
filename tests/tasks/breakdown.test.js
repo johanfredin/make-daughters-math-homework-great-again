@@ -1,6 +1,7 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { breakdown, checkStep } from "../../site/js/tasks/breakdown.js"
+import { breakdown } from "../../site/js/tasks/breakdown.js"
+import { checkStep } from "../../site/js/tasks/steps.js"
 import { generate } from "../../site/js/tasks/decimal-multiply.js"
 import { mulberry32 } from "../../site/js/engine/rng.js"
 import { dec, eq } from "../../site/js/engine/decimal.js"

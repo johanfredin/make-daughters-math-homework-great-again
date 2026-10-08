@@ -4,7 +4,7 @@ export const SLOTS = [
   { type: "decimal-multiply", whole: { from: 2, to: 9 }, decimal: "0,d" },
   { type: "decimal-multiply", whole: { from: 2, to: 9 }, decimal: "0,0d" },
   { type: "decimal-multiply", whole: { from: 2, to: 6 }, decimal: "n,5", n: [1, 2] },
-  { type: "decimal-multiply", whole: { from: 20, to: 90, step: 10, also: [25, 45] }, decimal: "0,d" },
+  { type: "decimal-multiply", whole: { from: 20, to: 90, step: 10 }, decimal: "0,d" },
   { type: "decimal-multiply", whole: { from: 20, to: 90, step: 10 }, decimal: "0,0d" },
   { type: "decimal-multiply", whole: { from: 200, to: 500, step: 100 }, decimal: "0,d" },
 ]

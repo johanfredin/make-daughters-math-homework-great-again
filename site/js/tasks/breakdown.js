@@ -1,11 +1,12 @@
-// "Dela upp det" (R10): break decimal · whole into small steps that teach *how*, never the result.
+// "Dela upp det" for decimal-multiply (R10): break decimal · whole into small steps that teach *how*,
+// never the result. Step format: see steps.js.
 //
 // Step shape:
 //   { kind: "number", prompt, help, answer: dec, visual: [dec…] }       she types the answer
 //   { kind: "choose", prompt, help, options: [string], answerIndex, visual } she picks an option
 // visual = the numbers to show in place-value boxes (inputs of the step, never its answer).
 import { dec, mul, add, sub, eq, shift, digits, decimals, isInteger, cmp } from "../engine/decimal.js"
-import { formatNumber as f, formatExpr, parseAnswer } from "../ui/number-format.js"
+import { formatNumber as f, formatExpr } from "../ui/number-format.js"
 import { T } from "../ui/text-sv.js"
 
 const B = T.breakdown
@@ -55,10 +56,3 @@ export function breakdown(decimalFactor, wholeFactor) {
   return { strategy: useSplit ? "split" : "noComma", expr, answer, steps, summary: B.assembled(expr, f(answer)) }
 }
 
-/** "correct" | "wrong" | "invalid" (not a number; does not count as a try). */
-export function checkStep(step, input) {
-  if (step.kind === "choose") return input === step.answerIndex ? "correct" : "wrong"
-  const given = parseAnswer(String(input))
-  if (given === null) return "invalid"
-  return eq(given, step.answer) ? "correct" : "wrong"
-}

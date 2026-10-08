@@ -6,6 +6,8 @@ import * as P from "../../site/js/engine/progress.js"
 import { mulberry32 } from "../../site/js/engine/rng.js"
 import { formatNumber } from "../../site/js/ui/number-format.js"
 import { add, dec } from "../../site/js/engine/decimal.js"
+import { TASK_TYPES } from "../../site/js/tasks/index.js"
+import * as decimalMultiply from "../../site/js/tasks/decimal-multiply.js"
 
 const world = JSON.parse(readFileSync(new URL("../../site/worlds/kap1/world.json", import.meta.url), "utf8"))
 const levelNode = world.nodes.find((n) => n.id === "multiplikation")
@@ -119,4 +121,21 @@ test("the camp demo is the world's demo task (1,5 · 5) with the split strategy"
   const demo = L.campDemo(camp)
   assert.equal(demo.breakdown.strategy, "split")
   assert.equal(demo.breakdown.expr, "1,5 · 5")
+})
+
+test("a task type without breakdown() is never offered 'Dela upp det'", () => {
+  const { breakdown, ...withoutBreakdown } = decimalMultiply
+  TASK_TYPES["no-breakdown"] = withoutBreakdown
+  try {
+    const specs = [{ ...levelNode.tasks[0], type: "no-breakdown" }]
+    let lv = L.startLevel(specs, mulberry32(9))
+    for (let i = 0; i < 4; i++) {
+      const r = L.answerTask(lv, wrong(lv))
+      assert.equal(r.result.offerBreakdown, false)
+      lv = r.lv
+    }
+    assert.throws(() => L.openBreakdown(lv))
+  } finally {
+    delete TASK_TYPES["no-breakdown"]
+  }
 })

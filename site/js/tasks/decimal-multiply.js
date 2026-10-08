@@ -6,8 +6,8 @@
 //   n:       [1, 2]                              whole parts allowed for "n,5"
 import { dec, mul, add, eq, shift } from "../engine/decimal.js"
 import { int, pick } from "../engine/rng.js"
-import { formatExpr } from "../ui/number-format.js"
-import { parseAnswer } from "../ui/number-format.js"
+import { formatExpr, parseAnswer } from "../ui/number-format.js"
+import { breakdown as breakdownOf } from "./breakdown.js"
 
 export const TYPE = "decimal-multiply"
 
@@ -49,6 +49,16 @@ export function generate(spec, rng) {
   const d = decimalFactor(spec, rng)
   const w = dec(pick(rng, wholeChoices(spec.whole)))
   return taskFrom(d, w, rng() < 0.5)
+}
+
+/** "Dela upp det" for this task (optional per task type; the level engine offers it only if present). */
+export function breakdown(task) {
+  return breakdownOf(task.decimalFactor, task.wholeFactor)
+}
+
+/** The camp's fixed demo task from world.json, e.g. { "type": "decimal-multiply", "decimal": "1,5", "whole": 5 }. */
+export function demoTask(demo) {
+  return taskFrom(dec(demo.decimal), dec(demo.whole), true)
 }
 
 /**

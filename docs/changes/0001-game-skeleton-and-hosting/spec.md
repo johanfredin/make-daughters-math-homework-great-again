@@ -412,7 +412,7 @@ task → [answer]
   | 1 | 2–9 | `0,d` (d 1–9) | `3 · 0,7`, `8 · 0,6`, `0,9 · 6` |
   | 2 | 2–9 | `0,0d` (d 1–9) | `6 · 0,04`, `4 · 0,08`, `0,03 · 2` |
   | 3 | 2–6 | `1,5` or `2,5` | *(none on this sheet — the owner's own example `1,5 · 5`; a "half" pattern of the same difficulty)* |
-  | 4 | 20–90 (tens), 25 or 45 | `0,d` | `0,3 · 20`, `25 · 0,1`, `45 · 0,2`, `50 · 0,7` |
+  | 4 | 20–90 (tens) | `0,d` | `0,3 · 20`, `50 · 0,7`, `0,6 · 30` |
   | 5 | 20–90 (tens) | `0,0d` | `40 · 0,02`, `0,03 · 20`, `40 · 0,08` |
   | 6 | 200–500 (hundreds) | `0,d` | `0,3 · 200`, `0,6 · 300`, `500 · 0,9` |
 
@@ -477,6 +477,12 @@ task → [answer]
 - **2026-10-08 Owner (chat, during build):** "phone layout you dont need to bother with". The target
   devices are the iPad and desktop. AC3, R17 and the plan's browser checks were changed from 375×667
   to iPad sizes.
+- **2026-10-08 Claude (review fix, owner's "never harder" rule):** the reviewer found that slot 4's extra
+  whole numbers 25/45 with any `0,d` give carrying tasks (`45 · 0,7 = 31,5`) the sheet never asks for. On the
+  sheet, 25 appears only with 0,1 and 45 only with 0,2. 25/45 were dropped from slot 4. A test now asserts that
+  every task is one times-table fact plus moving the comma.
+- **2026-10-08 Owner (chat, during build):** Claude may commit, and may push after asking (recorded in
+  AGENTS.md/CLAUDE.md on this branch).
 
 ## Open questions
 1. Game title and cat names: do you or she want to rename them later? This is easy to change in

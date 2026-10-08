@@ -28,6 +28,9 @@ test("AC7: every slot × 1000 seeds gives an exact answer, matches its sheet pat
       const whole = Number(toPlain(t.wholeFactor))
 
       assert.ok(wholes.has(whole), `${where}: whole ${whole} outside sheet pattern`)
+      // Never harder than the sheet: every task is one times-table fact plus moving the comma
+      // (no 45 · 0,7 = 31,5 style carrying, which the sheet never asks for).
+      assert.equal(String(whole).replace(/0/g, "").length, 1, `${where}: ${whole} needs more than one table fact`)
       assert.match(decPlain, DECIMAL_PATTERN[spec.decimal], `${where}: decimal ${decPlain} outside sheet pattern`)
       assert.equal(toPlain(t.answer), oracle(decPlain, whole), `${where}: wrong answer`)
 

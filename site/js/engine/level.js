@@ -6,9 +6,8 @@
 //   wrong (2nd+)       → hint + offer "Dela upp det"
 //   breakdown finished → the task counts as cleared
 import { taskType } from "../tasks/index.js"
-import { breakdown, checkStep } from "../tasks/breakdown.js"
+import { checkStep } from "../tasks/steps.js"
 import { clearLevel } from "./progress.js"
-import { dec } from "./decimal.js"
 import { pick } from "./rng.js"
 
 export const OFFER_BREAKDOWN_AFTER = 2
@@ -18,7 +17,7 @@ export const PRACTICE_TASKS = 3
 function withTask(lv, index) {
   if (index >= lv.specs.length) return { ...lv, index, task: null, tries: 0, breakdownOffered: false, breakdown: null, done: true }
   const spec = lv.specs[index]
-  const task = taskType(spec.type).generate(spec, lv.rng)
+  const task = { ...taskType(spec.type).generate(spec, lv.rng), type: spec.type } // the registry key is the truth
   return { ...lv, index, task, tries: 0, breakdownOffered: false, breakdown: null, done: false }
 }
 
@@ -34,19 +33,25 @@ export function answerTask(lv, input) {
   if (r.status === "invalid") return { lv, result: r }
   if (r.status === "correct") return { lv: withTask(lv, lv.index + 1), result: r }
   const tries = lv.tries + 1
-  const offerBreakdown = tries >= OFFER_BREAKDOWN_AFTER
+  const offerBreakdown = tries >= OFFER_BREAKDOWN_AFTER && hasBreakdown(lv.task)
   return { lv: { ...lv, tries, breakdownOffered: offerBreakdown }, result: { ...r, offerBreakdown } }
+}
+
+/** A task type may offer "Dela upp det" by exporting breakdown(task); the engine knows nothing else about it. */
+export function hasBreakdown(task) {
+  return typeof taskType(task.type).breakdown === "function"
 }
 
 export function openBreakdown(lv) {
   if (!lv.breakdownOffered) throw new Error("openBreakdown: not offered yet")
-  return { ...lv, breakdown: startBreakdown(lv.task.decimalFactor, lv.task.wholeFactor) }
+  return { ...lv, breakdown: startBreakdown(taskType(lv.task.type).breakdown(lv.task)) }
 }
 
 // ---- Breakdown runner (used inside a level and on its own in the camp) ----
 
-export function startBreakdown(decimalFactor, wholeFactor) {
-  return { data: breakdown(decimalFactor, wholeFactor), step: 0, tries: 0, finished: false }
+/** data: { expr, answer, steps, summary } from a task type's breakdown(). */
+export function startBreakdown(data) {
+  return { data, step: 0, tries: 0, finished: false }
 }
 
 /** → { run, result: { status: "correct" | "wrong" | "invalid" | "revealed", finished } } */
@@ -87,13 +92,17 @@ export function campPractice(levelNode, rng) {
   return startLevel(specs, rng, { practice: true })
 }
 
+/** An example from the level's own specs, limited to task types that can be broken down. */
 export function campExample(levelNode, rng) {
-  const spec = pick(rng, levelNode.tasks)
-  const task = taskType(spec.type).generate(spec, rng)
-  return { spec, task, breakdown: breakdown(task.decimalFactor, task.wholeFactor) }
+  const specs = levelNode.tasks.filter((s) => typeof taskType(s.type).breakdown === "function")
+  const spec = pick(rng, specs)
+  const type = taskType(spec.type)
+  const task = type.generate(spec, rng)
+  return { spec, task, breakdown: type.breakdown(task) }
 }
 
+/** The camp's fixed demo ("Visa mig hur"), described in world.json as { type, ...task fields }. */
 export function campDemo(campNode) {
-  const b = breakdown(dec(campNode.demo.decimal), dec(campNode.demo.whole))
-  return { breakdown: b }
+  const type = taskType(campNode.demo.type)
+  return { breakdown: type.breakdown(type.demoTask(campNode.demo)) }
 }

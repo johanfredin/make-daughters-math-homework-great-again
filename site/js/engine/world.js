@@ -5,6 +5,7 @@ import { TASK_TYPES } from "../tasks/index.js"
 export const MAP_W = 320
 export const MAP_H = 180
 const KINDS = new Set(["start", "level", "camp", "boss"])
+export const FOES = new Set(["rat"]) // foe sprites the scene can draw
 
 /** Returns a list of human-readable problems; empty means valid. */
 export function validateWorld(w) {
@@ -27,6 +28,7 @@ export function validateWorld(w) {
     if (n?.kind !== "start" && (typeof n?.name !== "string" || !n.name)) err(`${at}: name missing`)
     if (n?.kind === "level") {
       if (typeof n.playable !== "boolean") err(`${at}: playable must be true or false`)
+      if (n.foe !== undefined && !FOES.has(n.foe)) err(`${at}: foe must be one of ${[...FOES].join(", ")}`)
       if (n.playable) {
         if (!Array.isArray(n.tasks) || n.tasks.length === 0) err(`${at}: a playable level needs tasks`)
         else n.tasks.forEach((t, j) => TASK_TYPES[t?.type] || err(`${at}: tasks[${j}] has unknown type "${t?.type}"`))
@@ -34,7 +36,15 @@ export function validateWorld(w) {
     }
     if (n?.kind === "camp") {
       if (typeof n.mentor !== "string" || !n.mentor) err(`${at}: mentor missing`)
-      if (!n.demo || typeof n.demo.decimal !== "string" || !Number.isInteger(n.demo.whole)) err(`${at}: demo {decimal, whole} missing`)
+      const demoType = TASK_TYPES[n.demo?.type]
+      if (!demoType?.demoTask || !demoType.breakdown) err(`${at}: demo needs a task type that has demoTask and breakdown`)
+      else {
+        try {
+          demoType.demoTask(n.demo)
+        } catch {
+          err(`${at}: demo is not a valid ${n.demo.type} task`)
+        }
+      }
     }
   }
   const byKind = (k) => w.nodes.filter((n) => n?.kind === k)

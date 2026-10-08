@@ -91,7 +91,28 @@ test("R21: no homework photos or other images are deployed", () => {
   for (const f of files) assert.doesNotMatch(rel(f), /\.(png|jpe?g|heic|webp|pdf)$/i, `${rel(f)} should not be in site/`)
 })
 
-test("AC12: the number pad buttons are at least 48 px in the stylesheet", () => {
+test("AC12: every button-like control is at least 48 px (Gå in at least 64 px) in the stylesheet", () => {
   const css = read(path.join(SITE, "css/game.css"))
-  for (const m of css.matchAll(/\.key\s*\{[^}]*min-height:\s*(\d+)px/g)) assert.ok(Number(m[1]) >= 48, `.key min-height ${m[1]}px`)
+  let checked = 0
+  for (const m of css.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+    const selector = m[1].trim()
+    if (!/\.(btn|key|swatch)\b|\.btn-|\.key-/.test(selector)) continue
+    for (const d of m[2].matchAll(/min-(?:height|width):\s*(\d+)px/g)) {
+      checked++
+      assert.ok(Number(d[1]) >= 48, `${selector}: ${d[0]}`)
+    }
+  }
+  assert.ok(checked >= 4, "found the button rules")
+  const enter = css.match(/#enter-btn\s*\{([^}]*)\}/)[1]
+  for (const d of enter.matchAll(/(?:^|[\s;])(?:width|height):\s*(\d+)px/g)) assert.ok(Number(d[1]) >= 64, `#enter-btn ${d[0]}`)
+})
+
+test("sprites: every row has the sprite's width and only palette colours", async () => {
+  const { allSprites } = await import(pathToFileURL(path.join(SITE, "js/engine/sprites.js")).href)
+  for (const [name, { rows, palette }] of Object.entries(allSprites())) {
+    for (const [i, r] of rows.entries()) {
+      assert.equal(r.length, rows[0].length, `${name} row ${i}`)
+      for (const c of r) assert.ok(c === "." || c in palette, `${name} row ${i}: unknown colour "${c}"`)
+    }
+  }
 })

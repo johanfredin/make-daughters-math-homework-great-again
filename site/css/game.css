@@ -165,7 +165,7 @@ input[type="text"] {
 .btn-primary { background: var(--accent); color: var(--accent-text); }
 .btn-help { background: var(--help); color: #08243a; width: 100%; margin: 4px 0 10px; }
 .btn-danger { background: var(--danger); color: #3a0d08; }
-.btn-small { min-height: 44px; padding: 6px 12px; font-size: 16px; }
+.btn-small { min-height: 48px; padding: 6px 12px; font-size: 16px; }
 .btn-option { width: 100%; font-size: 24px; }
 
 /* ---- Fur swatches ---- */
@@ -275,7 +275,7 @@ input[type="text"] {
   font-variant-numeric: tabular-nums;
 }
 .expr { font-size: 22px; margin: 4px 0; color: var(--muted); }
-.step-of { margin: 0; text-align: center; color: var(--muted); font-size: 16px; }
+.step-of { margin: 0; text-align: center; color: var(--muted); font-size: 20px; }
 
 .feedback { min-height: 1.4em; margin: 6px 0; text-align: center; font-size: 20px; color: var(--help); }
 
@@ -320,7 +320,7 @@ input[type="text"] {
 .speaker { margin: 0 0 4px; font-weight: 800; color: var(--accent); }
 
 .place-value { margin: 10px auto; border-collapse: separate; border-spacing: 4px; }
-.place-value th { font-size: 11px; font-weight: 600; color: var(--muted); padding: 0 2px; max-width: 76px; }
+.place-value th { font-size: 16px; font-weight: 700; color: var(--text); padding: 0 4px; }
 .place-value td {
   width: 40px;
   height: 44px;
@@ -348,7 +348,7 @@ input[type="text"] {
   #game.with-panel #stage { flex-basis: 24vh; }
   #panel { padding: 8px 12px 12px; }
   .panel-head h2 { font-size: 17px; }
-  .btn-small { font-size: 14px; padding: 4px 10px; }
+  .btn-small { font-size: 15px; padding: 4px 10px; }
   .progress { font-size: 16px; }
   .question { margin: 6px 0 2px; font-size: 26px; }
   .feedback { margin: 2px 0; }
