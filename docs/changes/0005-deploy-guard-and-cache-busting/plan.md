@@ -1,10 +1,10 @@
 ---
 id: 0005-deploy-guard-and-cache-busting
 stage: plan
-status: draft
+status: approved
 spec: docs/changes/0005-deploy-guard-and-cache-busting/spec.md
-approved_by:
-approved_at:
+approved_by: Johan Fredin (delegated in chat 2026-10-08: "you are allowed to approve all changes"; recorded by Claude)
+approved_at: 2026-10-08T21:10:37+02:00
 ---
 
 # Plan: deploy guard and cache busting
