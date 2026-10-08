@@ -191,8 +191,9 @@ padlock is kept only for the den.
 | "3 tiondelar · 20 = ? tiondelar" | "3 tenths · 20 = ? tenths" |
 | Help 2: "Räkna som vanligt, men med tiondelar i stället för hela." | "Count as usual, but with tenths instead of wholes." |
 | "60 tiondelar, vilket tal är det?" | "60 tenths, which number is that?" |
-| Help 3: "10 tiondelar är 1 hel. Hur många hela blir 60 tiondelar?" | "10 tenths is 1 whole. How many wholes do 60 tenths make?" |
-| Bar label: "10 tiondelar = 1 hel" | "10 tenths = 1 whole" |
+| Help 3, tenths (as built): "Tio tiondelar blir en hel. Hur många hela blir 60 tiondelar?" | "Ten tenths make one whole. How many wholes do 60 tenths make?" |
+| Help 3, hundredths (as built, amendment): "Hundradelar står i andra rutan efter kommat. Sista siffran i 24 ska stå där." (one-digit count: "Siffran 8 ska stå där.") | "Hundredths are in the second box after the comma. The last digit of 24 must be there." |
+| Bar label, tenths only: "10 tiondelar = 1 hel" | "10 tenths = 1 whole" |
 
 ## Alternatives considered
 - **Keep moving the comma, explained better.** This is the method she already found confusing, and it
