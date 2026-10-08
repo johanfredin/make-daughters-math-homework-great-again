@@ -69,5 +69,21 @@ test("stamping fails when index.html lacks a reference it must stamp", () => {
 })
 
 test("a version with odd characters is refused", () => {
-  assert.throws(() => stampSite(SITE, 'x"><script>'), /bad version/)
+  const dir = stampedCopy("first")
+  try {
+    assert.throws(() => stampSite(dir, 'x"><script>'), /bad version/)
+  } finally {
+    rmSync(dir, { recursive: true })
+  }
+})
+
+test("modules only use imports the stamp understands", () => {
+  // Dynamic import() and single-quoted or template specifiers would stay unstamped, so the same
+  // module could load under two URLs (split state). Keep every import static and double-quoted.
+  for (const f of walk(path.join(SITE, "js")).filter((p) => p.endsWith(".js"))) {
+    const src = readFileSync(f, "utf8")
+    const where = path.relative(SITE, f)
+    assert.doesNotMatch(src, /\bimport\s*\(/, `${where}: dynamic import()`)
+    assert.doesNotMatch(src, /^\s*(?:import|export)\b[^\n]*?\bfrom\s*['`]|^\s*import\s*['`]/m, `${where}: import not in double quotes`)
+  }
 })

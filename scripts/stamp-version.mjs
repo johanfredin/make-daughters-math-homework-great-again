@@ -23,7 +23,7 @@ export function stampSite(dir, version) {
   const indexPath = path.join(dir, "index.html")
   let html = readFileSync(indexPath, "utf8")
   for (const ref of PAGE_REFS) {
-    const attr = new RegExp(`(href|src)="${ref.replace(".", "\\.")}"`)
+    const attr = new RegExp(`(href|src)="${ref.replaceAll(".", "\\.")}"`)
     if (!attr.test(html)) throw new Error(`index.html has no reference to ${ref}`)
     html = html.replace(attr, `$1="${ref}?v=${version}"`)
   }
