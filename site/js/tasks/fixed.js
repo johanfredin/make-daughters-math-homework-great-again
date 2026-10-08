@@ -62,7 +62,8 @@ export function check(task, input) {
     return ok ? { status: "correct" } : { status: "wrong", hint: "generic" }
   }
   if (eq(given, answer)) return { status: "correct" }
-  if (task.kind !== "fraction" && POWERS.some((p) => eq(mul(given, p), answer) || eq(div(given, p), answer))) {
+  // The comma hint only fits calculations; place value ("5 i 587"), rounding and words have a prompt instead
+  if (task.kind !== "fraction" && !task.prompt && POWERS.some((p) => eq(mul(given, p), answer) || eq(div(given, p), answer))) {
     return { status: "wrong", hint: "comma" }
   }
   const factors = typeof task.text === "string" ? task.text.split(" · ") : []

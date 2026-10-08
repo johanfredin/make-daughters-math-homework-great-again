@@ -59,3 +59,10 @@ approved_at: 2026-10-08T17:41:43+02:00
   proofread against the photos.
 - **iPad audio:** the context starts on the first gesture; if it fails, sound is simply off.
 - **Rollback:** revert the merge. Old code ignores the `solved` field, and level ids are unchanged.
+
+## Amendment after review (2026-10-08)
+- `tests/tasks/breakdown.test.js`: the property test's "whole factor has one non-zero digit" check is
+  removed. The sheets' own tasks (25 · 0,1, 45 · 0,2, 0,1 · 65) break it, and they are exact homework.
+  The check that the unit count is 1–9 stays.
+- `tests/engine/sheet.test.js` was added after review: one broken sheet per rule.
+- Sparkles live in `engine/scene.js` (`drawBurst`), not a new `engine/effects.js`.

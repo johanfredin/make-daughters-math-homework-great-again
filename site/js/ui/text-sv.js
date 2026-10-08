@@ -32,7 +32,6 @@ export const T = {
   },
 
   level: {
-    taskOf: (i, n) => `Uppgift ${i} av ${n}`,
     question: (expr) => `${expr}\u00a0=\u00a0?`,
     answerLabel: "Ditt svar",
     invalid: "Skriv ett tal.",
@@ -41,9 +40,6 @@ export const T = {
     hintGeneric: ["Nästan! Prova igen.", "Inte riktigt. Försök en gång till.", "Ta det lugnt och räkna en gång till."],
     breakdownButton: "Dela upp det",
     praise: ["Snyggt!", "Klockrent!", "Där satt den!", "Bra jobbat!", "Grymt!"],
-    levelDone: "Banan är klar!",
-    keyEarned: "Du fick en nyckel! 🔑",
-    alreadyHaveKey: "Nyckeln har du redan. Bra övning ändå!",
     backToMap: "Tillbaka till kartan",
   },
 
@@ -57,6 +53,7 @@ export const T = {
     keyDone: (solved, total) => `Lösta: ${solved}/${total} – nyckeln är din!`,
     taskLabel: (id) => `Uppgift ${id}`,
     skip: "Hoppa över",
+    skipHint: "Du kan hoppa över den och ta den sen.",
     sectionDone: "Delen är klar!",
     sectionResult: (n, of) => `Du löste ${n} av ${of}.`,
     keyNow: "Du har löst två tredjedelar – du fick en nyckel! 🔑",

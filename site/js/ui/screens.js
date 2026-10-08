@@ -104,8 +104,11 @@ export function mathText(text) {
   const re = /(\d+)\/(\d+)/g
   let last = 0
   for (let m; (m = re.exec(text)); ) {
-    if (m.index > last) out.push(text.slice(last, m.index))
-    out.push(h("span", { className: "frac" }, h("span", { className: "frac-top" }, m[1]), h("span", { className: "frac-bottom" }, m[2])))
+    let before = text.slice(last, m.index)
+    const mixed = /\d $/.test(before) // "2 2/3": the whole number sits right next to the fraction
+    if (mixed) before = before.slice(0, -1)
+    if (before) out.push(before)
+    out.push(h("span", { className: mixed ? "frac frac-mixed" : "frac" }, h("span", { className: "frac-top" }, m[1]), h("span", { className: "frac-bottom" }, m[2])))
     last = m.index + m[0].length
   }
   if (last < text.length) out.push(text.slice(last))

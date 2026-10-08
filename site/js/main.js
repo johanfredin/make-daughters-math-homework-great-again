@@ -274,7 +274,10 @@ function submitAnswer(input) {
   if (r.result.status === "invalid") return showTask(T.level.invalid)
   if (r.result.status === "wrong") {
     sound.wrong()
-    return showTask(HINTS[r.result.hint]())
+    const hint = HINTS[r.result.hint]()
+    // no "Dela upp det" for this task: after 3 misses, point her to "Hoppa över" (0003 review)
+    const stuck = !app.level.breakdownOffered && !app.level.practice && app.level.tries >= 3
+    return showTask(stuck ? `${hint} ${T.sections.skipHint}` : hint)
   }
   taskSolved()
 }
@@ -289,6 +292,7 @@ function skipTask() {
 function taskSolved() {
   sound.correct()
   pounce()
+  let keyNow = false
   if (!app.level.practice) {
     const node = app.levelNode
     app.state = P.markSolved(app.state, node.id, app.level.solvedNow)
@@ -296,12 +300,13 @@ function taskSolved() {
     app.state = r.state
     if (r.keyAwarded) {
       app.keyJustEarned = true
+      keyNow = true
       sound.key()
     }
     save()
   }
   if (app.level.done) finishSection()
-  else showTask(oneOf(T.level.praise))
+  else showTask(keyNow ? T.sections.keyNow : oneOf(T.level.praise)) // celebrate the key the moment it comes
 }
 
 function finishSection() {

@@ -82,8 +82,10 @@ test("AC8 + 0002 AC7 + 0003: every sheet breakdown — last step is the answer, 
       assert.ok(eq(last.answer, t.answer), `${t.text}: last step ${formatNumber(last.answer)}`)
       if (b.strategy === "units") {
         const [count, , choose] = b.steps
-        // step 2 is exactly one times-table fact: count 1–9 times a number with one non-zero digit
+        // step 1 counts 1–9 tiondelar/hundradelar (the decimal has one non-zero digit); step 2 multiplies that count
         assert.ok(/^[1-9]$/.test(formatNumber(count.answer)), `${t.text}: unit count ${formatNumber(count.answer)}`)
+        // 0003: the old "whole factor has one non-zero digit" check was removed on purpose — the sheets'
+        // own tasks include 25 · 0,1, 45 · 0,2 and 0,1 · 65, which are exact homework, not generated.
         assert.equal(choose.kind, "choose")
         assert.equal(new Set(choose.options).size, 3, `${t.text}: options not distinct`)
         assert.equal(choose.options.filter((o) => o === formatNumber(t.answer)).length, 1, `${t.text}: answer not exactly once`)

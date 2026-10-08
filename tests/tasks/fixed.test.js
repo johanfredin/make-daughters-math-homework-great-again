@@ -20,6 +20,11 @@ test("0003 AC2: number tasks accept , or . and spaces; comma mistakes get the co
   assert.deepEqual(F.check(task("rakna", "12b"), "1 400"), { status: "correct" })
 })
 
+test("0003: no comma hint on place-value, rounding or word tasks", () => {
+  assert.deepEqual(F.check(task("repetition-1", "3a"), "5"), { status: "wrong", hint: "generic" }) // 5 in 587 = 500
+  assert.deepEqual(F.check(task("repetition-1", "12a"), "2"), { status: "wrong", hint: "generic" }) // 19,8 → 20
+})
+
 test("0003 AC2: negative answers accept − and -", () => {
   const t = task("repetition-2", "4a") // −7 − 2 = −9
   assert.deepEqual(F.check(t, "−9"), { status: "correct" })

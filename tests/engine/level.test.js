@@ -53,13 +53,20 @@ test("0003: choice tasks are answered by option index; wrong answers count as tr
 
 test("invalid input does not count as a try", () => {
   let lv = L.startSection(sectionTasks(multi, 0))
-  for (const s of ["", "abc", ","]) lv = L.answerTask(lv, s).lv
+  for (const s of ["", "abc", ","]) {
+    const r = L.answerTask(lv, s)
+    assert.equal(r.result.status, "invalid", `"${s}"`)
+    lv = r.lv
+  }
   assert.equal(lv.tries, 0)
 })
 
 test("0003 R4: 'Dela upp det' on decimal · whole tasks; finishing it solves the task", () => {
   let lv = L.startSection(sectionTasks(multi, 0))
   assert.equal(lv.breakdownOffered, true, "7 · 0,1 can be broken down")
+  const afterWrong = L.answerTask(lv, wrong(lv))
+  assert.equal(afterWrong.result.offerBreakdown, true, "0002 AC5: still offered after a wrong answer")
+  assert.equal(afterWrong.lv.breakdownOffered, true)
   lv = L.openBreakdown(lv)
   while (lv.breakdown) lv = stepRight(lv).lv
   assert.deepEqual(lv.solvedNow, ["1a"])
@@ -76,10 +83,13 @@ test("R10: a breakdown step reveals its answer after 3 wrong tries and moves on"
     return s.kind === "choose" ? (s.answerIndex + 1) % s.options.length : "999"
   }
   let r = L.answerStep(lv, bad(lv))
+  assert.equal(r.result.status, "wrong")
   r = L.answerStep(r.lv, bad(r.lv))
+  assert.equal(r.result.status, "wrong")
   r = L.answerStep(r.lv, bad(r.lv))
   assert.equal(r.result.status, "revealed")
   assert.equal(r.lv.breakdown.step, 1)
+  assert.equal(L.answerStep(r.lv, "xyz").result.status, "invalid")
 })
 
 test("0003 R7: the key comes once 2/3 of a level's tasks are solved — not before, and only once", () => {
