@@ -43,7 +43,7 @@ test("0002 AC7: 0,04 · 6 counts in hundredths: 4 → 24 → choose 0,24 from th
   // amendment: hundredths options = answer, ×10, ×100; drawn as the count's digits ending in a column
   assert.deepEqual(b.steps[2].options, ["0,24", "2,4", "24"])
   assert.equal(b.steps[2].answerIndex, 0)
-  assert.deepEqual(b.steps[2].columns, { digits: "24", ends: [-2, -1, 0] })
+  assert.deepEqual(b.steps[2].columns, { digits: "24", ends: [-2, -1, 0], target: -2, minPos: -2 })
   assert.equal(b.steps[2].bar, undefined)
   assert.match(b.steps[2].help, /Sista siffran i 24/)
 })
@@ -51,7 +51,7 @@ test("0002 AC7: 0,04 · 6 counts in hundredths: 4 → 24 → choose 0,24 from th
 test("0002: hundredths whose count ends in 0 (20 · 0,03 = 60 hundradelar = 0,6) still have one right row", () => {
   const b = breakdown(dec("0,03"), dec(20))
   assert.deepEqual(b.steps[2].options, ["0,6", "6", "60"])
-  assert.deepEqual(b.steps[2].columns, { digits: "60", ends: [-2, -1, 0] })
+  assert.deepEqual(b.steps[2].columns, { digits: "60", ends: [-2, -1, 0], target: -2, minPos: -2 })
 })
 
 test("0002: slot 6 — 500 · 0,9 → 9 tiondelar → 4 500 tiondelar → 450; singular unit for 1", () => {
