@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(./scripts/verify.sh*)",
+      "Bash(./scripts/approve.sh --check *)",
+      "Bash(.claude/watch-sdlc.sh*)",
+      "Bash(node --test*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)",
+      "Bash(git add *)",
+      "Bash(git rev-parse*)",
+      "Bash(git worktree list*)",
+      "Bash(git branch --list*)"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "Bash(git merge*)",
+      "Bash(git rebase*)"
+    ],
+    "deny": [
+      "Bash(git reset --hard*)",
+      "Bash(git clean*)",
+      "Bash(rm -rf *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write|NotebookEdit|Read|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guardrails.mjs"
+          }
+        ]
+      }
+    ]
+  }
+}
