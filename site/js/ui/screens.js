@@ -28,7 +28,7 @@ let activeNumpad = null
 function mount(container, ...children) {
   activeNumpad?.destroy()
   activeNumpad = null
-  container.replaceChildren(...children.filter((c) => c !== null && c !== undefined && c !== false))
+  container.replaceChildren(...children.flat(2).filter((c) => c !== null && c !== undefined && c !== false))
   container.hidden = false
   container.scrollTop = 0
 }
@@ -95,18 +95,105 @@ function answerArea(onSubmit) {
   return [display, pad]
 }
 
-/** view: { title, done, total, progressText, question, feedback, offerBreakdown, backText, onSubmit, onBreakdown, onBack } */
+/**
+ * Math text with stacked fractions: "3/5 + 4/5", "2 3/7 − 1 5/7". Fractions are written without spaces
+ * around "/" in the sheet files; division has spaces ("45,3 / 10") and stays inline.
+ */
+export function mathText(text) {
+  const out = []
+  const re = /(\d+)\/(\d+)/g
+  let last = 0
+  for (let m; (m = re.exec(text)); ) {
+    if (m.index > last) out.push(text.slice(last, m.index))
+    out.push(h("span", { className: "frac" }, h("span", { className: "frac-top" }, m[1]), h("span", { className: "frac-bottom" }, m[2])))
+    last = m.index + m[0].length
+  }
+  if (last < text.length) out.push(text.slice(last))
+  return out
+}
+
+/** A number line from `from` to `to` (decimal strings) in steps of 0,01, with one arrow. SVG, no inline styles. */
+function numberLine(task) {
+  const NS = "http://www.w3.org/2000/svg"
+  const svg = (tag, attrs, text) => {
+    const el = document.createElementNS(NS, tag)
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v))
+    if (text !== undefined) el.textContent = text
+    return el
+  }
+  const toHundredths = (s) => Math.round(Number(s.replace(",", ".")) * 100)
+  const lo = toHundredths(task.from)
+  const hi = toHundredths(task.to)
+  const W = 560
+  const x = (v) => 20 + ((v - lo) / (hi - lo)) * (W - 40)
+  const root = svg("svg", { viewBox: `0 0 ${W} 110`, class: "numberline", role: "img", "aria-label": T.kinds.numberlineLabel })
+  root.append(svg("line", { x1: 10, y1: 70, x2: W - 6, y2: 70, class: "nl-axis" }))
+  for (let v = lo; v <= hi; v++) {
+    const big = v % 10 === 0
+    const mid = v % 5 === 0
+    root.append(svg("line", { x1: x(v), y1: big ? 60 : mid ? 63 : 65, x2: x(v), y2: 70, class: "nl-tick" }))
+    if (big) root.append(svg("text", { x: x(v), y: 92, class: "nl-label" }, v === 0 ? "0" : (v / 100).toFixed(1).replace(".", ",")))
+  }
+  const ax = x(toHundredths(task.answer))
+  root.append(svg("path", { d: `M ${ax} 56 L ${ax - 6} 44 L ${ax + 6} 44 Z`, class: "nl-arrow" }))
+  root.append(svg("line", { x1: ax, y1: 16, x2: ax, y2: 46, class: "nl-arrow-line" }))
+  root.append(svg("text", { x: ax, y: 12, class: "nl-letter" }, task.arrow))
+  return root
+}
+
+/** The question area for a sheet task, by kind (0003 R2). */
+function taskQuestion(task) {
+  const prompt = task.prompt ? h("p", { className: "task-prompt" }, task.prompt) : null
+  if (task.kind === "numberline") return [prompt, numberLine(task), h("p", { className: "question" }, T.kinds.numberline(task.arrow))]
+  if (task.kind === "choice") return [prompt, task.text ? h("p", { className: "question" }, mathText(task.text)) : null]
+  if (task.kind === "estimate") return [prompt, h("p", { className: "question" }, mathText(T.kinds.estimate(task.text)))]
+  if (task.kind === "fraction") {
+    const asked = h("span", { className: "frac" }, h("span", { className: "frac-top" }, "?"), h("span", { className: "frac-bottom" }, String(task.den)))
+    return [prompt, h("p", { className: "question" }, mathText(task.text), " = ", asked)]
+  }
+  // "= ?" only after a calculation; words, place values and rounding show the plain number (the prompt asks)
+  const isCalculation = / [+\u2212·/] /.test(task.text)
+  return [prompt, h("p", { className: "question" }, mathText(isCalculation ? T.level.question(task.text) : task.text))]
+}
+
+/**
+ * view: { title, label, done, total, task, feedback, offerBreakdown, backText,
+ *         onSubmit(text), onChoose(index), onSkip, onBreakdown, onBack }
+ */
 export function taskPanel(panel, v) {
+  const task = v.task
   mount(
     panel,
     header(v.title, v.onBack, v.backText),
-    h("div", { className: "progress" }, h("span", {}, v.progressText), pips(v.done, v.total)),
-    h("p", { className: "question" }, v.question),
+    h("div", { className: "progress" }, h("span", {}, v.label), pips(v.done, v.total)),
+    taskQuestion(task),
     h("p", { className: "feedback", role: "status" }, v.feedback || " "),
     v.offerBreakdown ? button(T.level.breakdownButton, v.onBreakdown, "btn btn-help") : null,
   )
-  const [display, pad] = answerArea(v.onSubmit)
-  panel.append(display, pad)
+  if (task.kind === "choice") {
+    panel.append(h("div", { className: "options" }, task.options.map((o, i) => button(mathText(o), () => v.onChoose(i), "btn btn-option"))))
+  } else {
+    if (task.kind === "fraction") panel.append(h("p", { className: "task-prompt" }, T.kinds.fraction))
+    const [display, pad] = answerArea(v.onSubmit)
+    panel.append(display, pad)
+  }
+  if (v.onSkip) panel.append(h("div", { className: "actions" }, button(T.sections.skip, v.onSkip, "btn btn-small btn-skip")))
+}
+
+/** view: { title, intro, sections: [{ label, progress, done }], keyText, onPick(i), onBack } */
+export function sectionsPanel(panel, v) {
+  mount(
+    panel,
+    header(v.title, v.onBack, T.level.backToMap),
+    v.intro ? h("div", { className: "dialog" }, h("p", { className: "dialog-text" }, mathText(v.intro))) : null,
+    h("p", { className: "key-progress" }, v.keyText),
+    h("h3", { className: "sections-title" }, T.sections.title),
+    h(
+      "div",
+      { className: "actions stack" },
+      v.sections.map((s, i) => button([h("span", {}, s.label), h("span", { className: "section-progress" }, s.progress)], () => v.onPick(i), s.done ? "btn btn-section done" : "btn btn-section")),
+    ),
+  )
 }
 
 /** Place-value boxes for the given numbers (never the step's answer). */

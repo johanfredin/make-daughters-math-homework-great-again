@@ -47,6 +47,35 @@ export const T = {
     backToMap: "Tillbaka till kartan",
   },
 
+  // 0003: levels play the homework sheets in sections; 2/3 solved gives the key
+  sections: {
+    title: "Välj en del",
+    label: (n, range) => `Del ${n}: ${range}`,
+    progress: (solved, total) => `${solved}/${total} lösta`,
+    allSolved: "Allt löst!",
+    keyProgress: (solved, total, need) => `Lösta: ${solved}/${total} – ${need} ger nyckeln`,
+    keyDone: (solved, total) => `Lösta: ${solved}/${total} – nyckeln är din!`,
+    taskLabel: (id) => `Uppgift ${id}`,
+    skip: "Hoppa över",
+    sectionDone: "Delen är klar!",
+    sectionResult: (n, of) => `Du löste ${n} av ${of}.`,
+    keyNow: "Du har löst två tredjedelar – du fick en nyckel! 🔑",
+    backToSections: "Tillbaka till delarna",
+    nothingLeft: "Alla uppgifter här är lösta. Vi tar dem en gång till för övningens skull.",
+  },
+
+  kinds: {
+    estimate: (expr) => `${expr} \u2248 ?`,
+    fraction: "Skriv täljaren:",
+    numberline: (arrow) => `Pil ${arrow}`,
+    numberlineLabel: "Tallinje",
+  },
+
+  sound: {
+    on: "Ljud på",
+    off: "Ljud av",
+  },
+
   breakdown: {
     title: "Dela upp det",
     finish: "Klart!",

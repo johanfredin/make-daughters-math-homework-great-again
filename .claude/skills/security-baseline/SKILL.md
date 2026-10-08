@@ -18,8 +18,9 @@ The player is a child. The site is public. Keep it boring and private.
    - No CDN scripts, fonts or embeds at runtime unless a spec approves them.
    - Vendor approved libraries into `site/vendor/` with their licence and pinned version.
 3. **Homework photos stay out of the deployed site.**
-   - `sources/` is input for content design only. The owner is fine with it being public in the repo.
-   - Do not copy photos or transcribed sheets into `site/`: the game generates its own tasks.
+   - `sources/` holds the photos; they are never copied into `site/`.
+   - The sheets' *tasks* are transcribed into `site/worlds/*/sheets/*.json` and are public. The owner
+     decided this in change 0003, knowing the repo and site are public.
 4. **DOM safety.**
    - Render text with `textContent` or by creating elements.
    - Use `innerHTML` only with constant templates, never with data from `localStorage`, the URL or world files.
