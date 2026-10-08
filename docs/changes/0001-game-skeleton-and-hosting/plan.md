@@ -1,10 +1,10 @@
 ---
 id: 0001-game-skeleton-and-hosting
 stage: plan
-status: draft        # draft -> approved (human only, via scripts/approve.sh)
+status: approved
 spec: docs/changes/0001-game-skeleton-and-hosting/spec.md
-approved_by:
-approved_at:
+approved_by: Johan Fredin (delegated in chat 2026-10-08: "i approve the plan"; recorded by Claude)
+approved_at: 2026-10-08T15:24:54+02:00
 ---
 
 # Plan: game skeleton and hosting
