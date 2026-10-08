@@ -75,7 +75,8 @@ export const T = {
     unitWhichPrompt: (p, unit) => `${p} ${unit}, vilket tal är det?`,
     unitWhichHelp: {
       tenths: (p) => `Tio tiondelar blir en hel. Hur många hela blir ${p} tiondelar?`,
-      hundredths: (p) => `Hundradelar står i andra rutan efter kommat. Sista siffran i ${p} ska stå där.`,
+      hundredths: (p) =>
+        `Hundradelar står i andra rutan efter kommat. ${p.length === 1 ? `Siffran ${p}` : `Sista siffran i ${p}`} ska stå där.`,
     },
     bar: {
       tenths: "10 tiondelar = 1 hel",

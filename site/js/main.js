@@ -3,6 +3,7 @@
 import { validateWorld, nodeById, tryMove } from "./engine/world.js"
 import * as P from "./engine/progress.js"
 import * as L from "./engine/level.js"
+import * as W from "./engine/walk-queue.js"
 import { mulberry32, randomSeed } from "./engine/rng.js"
 import { createScene } from "./engine/scene.js"
 import { createInput } from "./engine/input.js"
@@ -54,7 +55,7 @@ const app = {
   rng: mulberry32(randomSeed()),
   cat: { x: 0, y: 0, dir: "down", frame: 0, bump: 0 },
   walk: null,
-  queuedAngle: null,
+  walkQ: W.idle(), // one push = one stone; a push during a walk is remembered (0002 R12)
   bumpUntil: 0,
   level: null,
   levelNode: null,
@@ -80,7 +81,7 @@ function toast(text, ms = 2600) {
 
 function setMode(mode) {
   app.mode = mode
-  app.queuedAngle = null
+  app.walkQ = W.idle()
   el.toast.hidden = true
   el.game.dataset.mode = mode
   const withPanel = mode === "level" || mode === "camp"
@@ -109,13 +110,14 @@ function placeCatOn(node) {
 
 function onDirection(angle) {
   if (app.mode !== "map") return
-  if (app.walk) {
-    app.queuedAngle = angle // remembered and done on arrival, so a push is never lost (0002 R12)
-    return
-  }
-  const r = tryMove(app.world, app.state.nodeId, angle)
-  if (r.move) startWalk(r.move)
-  else app.bumpUntil = performance.now() + 250
+  const pushed = W.push(app.walkQ, angle)
+  app.walkQ = pushed.q
+  if (pushed.go === null) return // walking: done on arrival
+  const r = tryMove(app.world, app.state.nodeId, pushed.go)
+  if (r.move) {
+    app.walkQ = W.started(app.walkQ)
+    startWalk(r.move)
+  } else app.bumpUntil = performance.now() + 250
 }
 
 function startWalk(toId) {
@@ -138,9 +140,9 @@ function arrive() {
   updateHud()
   // The cat stops on every stone: one push = one stone (0002 R12). Since nothing blocks the path any
   // more, walking on while the stick or key is held would carry her past the level she wanted.
-  const queued = app.queuedAngle
-  app.queuedAngle = null
-  if (queued !== null) onDirection(queued)
+  const next = W.arrived(app.walkQ)
+  app.walkQ = next.q
+  if (next.go !== null) onDirection(next.go)
 }
 
 function onEnter() {

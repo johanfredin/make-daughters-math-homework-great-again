@@ -72,6 +72,12 @@ export function decimals(x) {
   return normalise(x).scale
 }
 
+/** The part after the comma, keeping the sign: 2,5 → 0,5; −1,25 → −0,25. */
+export function fracPart(x) {
+  const { n, scale } = normalise(x)
+  return normalise({ n: n % 10 ** scale, scale })
+}
+
 /** The value's digits without sign or comma, e.g. 0,24 → "24", 6 → "6". */
 export function digits(x) {
   return String(Math.abs(normalise(x).n))

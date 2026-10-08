@@ -4,6 +4,7 @@ import { T } from "./text-sv.js"
 import { createNumpad } from "./numpad.js"
 import { toPlain } from "../engine/decimal.js"
 import { typeText } from "../engine/dialog.js"
+import { columnRange, columnCells } from "./place-value.js"
 import { FUR_COUNT, MAX_NAME } from "../engine/progress.js"
 
 /** Tiny element helper: h("button", { className: "big", onclick }, "text", child…) */
@@ -142,23 +143,13 @@ function unitBar(unitKey) {
  * columns: { digits, ends: [pos per option] } with pos -2 = hundradelar, -1 = tiondelar, 0 = ental.
  */
 function columnOption(digitsText, endPos, label, onclick) {
-  const cols = columnRange(digitsText) // the ×100 row (ending in ental) needs digits.length columns left of the comma
-  const digitAt = (pos) => {
-    const i = digitsText.length - 1 - (pos - endPos)
-    if (i >= 0 && i < digitsText.length) return digitsText[i]
-    return pos === 0 && endPos < 0 ? "0" : "" // a leading 0 before the comma, as in 0,24
-  }
-  const cells = cols.flatMap((pos) => [
-    h("span", { className: pos === -2 ? "pv-cell pv-target" : "pv-cell" }, digitAt(pos)),
+  const cols = columnRange(digitsText)
+  const values = columnCells(digitsText, endPos) // tested in tests/ui/place-value.test.js
+  const cells = cols.flatMap((pos, i) => [
+    h("span", { className: pos === -2 ? "pv-cell pv-target" : "pv-cell" }, values[i]),
     pos === 0 ? h("span", { className: "pv-comma" }, ",") : null,
   ])
   return h("button", { type: "button", className: "btn btn-option btn-columns", onclick }, h("span", { className: "pv-row", "aria-hidden": "true" }, cells), h("span", { className: "pv-label" }, label))
-}
-
-function columnRange(digitsText) {
-  const cols = []
-  for (let pos = digitsText.length - 1; pos >= -2; pos--) cols.push(pos)
-  return cols
 }
 
 function columnHeader(digitsText) {

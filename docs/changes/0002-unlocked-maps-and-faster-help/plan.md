@@ -122,7 +122,9 @@ After merge: push `main` (with the owner's go-ahead). The Pages workflow redeplo
 | File | Change | Requirement |
 |------|--------|-------------|
 | `site/js/tasks/breakdown.js` | Step-3 options are likely mistakes: tenths `÷10, answer, ×10`; hundredths `answer, ×10, ×100`. Hundredths step 3 carries `columns` (the count's digits and where each option ends) instead of `bar`. Split is used only for halves. | R7, R8 |
-| `site/js/ui/screens.js`, `site/css/game.css` | Hundredths options render as place-value rows (the count's digits, hundredths box highlighted) with the value underneath. | R7 |
+| `site/js/ui/screens.js`, `site/css/game.css` | Hundredths options render as place-value rows (the count's digits, hundredths box highlighted) with the value to the right. Box contents come from the pure, tested `site/js/ui/place-value.js` (placeholder zeros: 8 hundredths → 0,08). | R7 |
 | `site/js/ui/text-sv.js` | Hundredths step-3 help: "Hundradelar står i andra rutan efter kommat. Sista siffran i N ska stå där." | R7 |
-| `site/js/main.js` | Queue one push made during a walk and do it on arrival. | R12 |
+| `site/js/main.js`, `site/js/engine/walk-queue.js` | One push = one stone; queue one push made during a walk and do it on arrival (pure reducer, unit-tested). | R12 |
 | `tests/tasks/breakdown.test.js` | Named cases assert the exact options and `answerIndex`. Property test: options ≤ 2 decimals; hundredths answer ends in the hundredths column; units checks moved out of the per-step loop. | R7 |
+| `tests/tasks/breakdown.test.js` (changed assertion) | "answer position varies over 0/1/2" → exact positions `tenths:1`, `hundredths:0`, as decided by the owner. | R7 |
+| `tests/ui/place-value.test.js`, `tests/engine/walk-queue.test.js`, `tests/engine/decimal.test.js` | New: column-picture cells for 8/24/60/810; walk queue (AC10); `fracPart`. | R7, R12 |

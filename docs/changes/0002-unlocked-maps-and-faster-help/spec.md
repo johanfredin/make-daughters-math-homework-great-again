@@ -55,7 +55,7 @@ Three changes, based on how she actually played the first version:
   not plus" hint, or a generic one. Invalid input still doesn't count as a try.
 
 ### New explanation ("räkna i tiondelar och hundradelar": counting in tenths and hundredths)
-- **R7 The units strategy** replaces the without-the-comma strategy (`breakdown.js:39`) for decimals
+- **R7 The units strategy** *(the step-3 options and hundredths help below are superseded by the decisions log entry "Owner (chat, after review)")* replaces the without-the-comma strategy (`breakdown.js:39`) for decimals
   below 1. Examples:
 
   | Task | Step 1 (number) | Step 2 (number) | Step 3 (choose) |
@@ -82,7 +82,7 @@ Three changes, based on how she actually played the first version:
 - **R7b Step 1 points at the place-value boxes.** Step 1's visual is the decimal in the place-value
   boxes (as in 0001). Its help names the column ("första rutan efter kommat", the first box after the
   comma) and asks which digit is there.
-- **R8 Size picture in step 3.**
+- **R8 Size picture in step 3** *(tenths only since the amendment; hundredths use the column picture)*.
   - Next to the options, a bar of 10 boxes shows "10 tiondelar = 1 hel" ("10 tenths = 1 whole"), or
     "100 hundradelar = 1 hel" ("100 hundredths = 1 whole") as 10 boxes of 10.
   - It shows how many wholes fit, without giving the digits of the answer.
@@ -131,6 +131,11 @@ Three changes, based on how she actually played the first version:
   or counting decimals. Checked by a test.
 - **AC9 (R8, R11)** In the browser, the step-3 bar is visible. "Ett till exempel" in the camp can show a
   units breakdown.
+
+- **AC10 (R12, added with the amendment)**
+  - A push while standing walks one stone and the cat stops there.
+  - A push during a walk is done on arrival, once; the latest push wins.
+  - Holding a key (auto-repeat) or the stick does not walk on. *Unit test: `tests/engine/walk-queue.test.js`; browser check for holding.*
 
 All 0001 acceptance criteria that this change doesn't alter still hold: verify.sh passes and the
 structure tests pass.

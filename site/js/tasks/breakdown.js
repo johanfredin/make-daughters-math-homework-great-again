@@ -5,7 +5,7 @@
 //   { kind: "number", prompt, help, answer: dec, visual: [dec…] }       she types the answer
 //   { kind: "choose", prompt, help, options: [string], answerIndex, visual } she picks an option
 // visual = the numbers to show in place-value boxes (inputs of the step, never its answer).
-import { dec, mul, add, sub, eq, shift, digits, decimals, cmp } from "../engine/decimal.js"
+import { dec, mul, add, sub, eq, shift, digits, decimals, cmp, fracPart } from "../engine/decimal.js"
 import { formatNumber as f, formatExpr } from "../ui/number-format.js"
 import { T } from "../ui/text-sv.js"
 
@@ -62,7 +62,7 @@ function unitsStrategy(d, w) {
 /** Breakdown of decimalFactor · wholeFactor. `expr` = the task as she saw it (factor order). */
 export function breakdown(decimalFactor, wholeFactor, expr = formatExpr(decimalFactor, "*", wholeFactor)) {
   // Split for halves ≥ 1 (1,5 · 5 → 1 + 0,5); everything else counts in tenths/hundredths.
-  const useSplit = cmp(decimalFactor, dec(1)) >= 0 && eq(sub(decimalFactor, dec(Math.trunc(decimalFactor.n / 10 ** decimalFactor.scale))), dec("0,5"))
+  const useSplit = cmp(decimalFactor, dec(1)) >= 0 && eq(fracPart(decimalFactor), dec("0,5"))
   const steps = useSplit ? splitStrategy(decimalFactor, wholeFactor) : unitsStrategy(decimalFactor, wholeFactor)
   const answer = mul(decimalFactor, wholeFactor)
   return { strategy: useSplit ? "split" : "units", expr, answer, steps, summary: B.assembled(expr, f(answer)) }

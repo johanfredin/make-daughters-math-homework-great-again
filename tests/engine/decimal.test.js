@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { dec, mul, add, sub, eq, cmp, shift, isInteger, decimals, toPlain } from "../../site/js/engine/decimal.js"
+import { dec, mul, add, sub, eq, cmp, shift, isInteger, decimals, toPlain, fracPart } from "../../site/js/engine/decimal.js"
 
 test("dec parses strings with comma or dot, and integers", () => {
   assert.deepEqual(dec("1,5"), { n: 15, scale: 1 })
@@ -46,6 +46,13 @@ test("shift multiplies by powers of ten", () => {
   assert.equal(toPlain(shift(dec("45,3"), -1)), "4.53")
   assert.equal(toPlain(shift(dec(24), -2)), "0.24")
   assert.equal(toPlain(shift(dec("0,07"), 3)), "70")
+})
+
+test("fracPart keeps only the part after the comma", () => {
+  assert.equal(toPlain(fracPart(dec("2,5"))), "0.5")
+  assert.equal(toPlain(fracPart(dec("1,25"))), "0.25")
+  assert.equal(toPlain(fracPart(dec("7"))), "0")
+  assert.equal(toPlain(fracPart(dec("-1,5"))), "-0.5")
 })
 
 test("isInteger and decimals", () => {
