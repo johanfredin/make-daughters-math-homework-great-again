@@ -107,8 +107,12 @@ The remaining six levels of World 1, the other camps and the boss are change 000
     the decimal is `< 1` or `≥ 1`.
   - The answer is exact: all maths uses scaled integers, never floating point.
   - With a seed, the generator is deterministic.
-  - The level difficulty ramps up: tasks 1–2 are easier than the sheet (one decimal, whole number
-    2–9), and tasks 5–6 match the sheet (e.g. `40 · 0,02`, `500 · 0,9`).
+  - Difficulty is of the same vintage as `sources/kap1/multiply-decimals.png`: never harder, and at
+    most slightly easier (owner rule, 2026-10-08).
+    - Every slot follows a pattern that appears on the sheet; see the slot table under
+      *Player-facing content*.
+    - The decimal factor has exactly one non-zero digit (`0,d` or `0,0d`). The one exception is slot
+      3 (`1,5` / `2,5`).
 - **R10 Breakdown ("Dela upp det").** For a multiplication `decimal · whole`, a pure function returns
   an ordered list of steps using one of two strategies:
   - **Split strategy** (the decimal is `≥ 1` and not a whole number), e.g. `1,5 · 5`:
@@ -245,7 +249,8 @@ The remaining six levels of World 1, the other camps and the boss are change 000
   - Given seeds 1–1000 for each slot in the level, every generated task:
     - has an answer equal to an independently computed exact product
     - formats with no floating-point noise
-    - stays within its declared ranges
+    - stays within its declared ranges and its slot's sheet pattern (whole-number set; the decimal
+      factor has exactly one non-zero digit, or is `1,5` / `2,5` in slot 3)
   - The same seed gives the same task.
 - **AC8 (R10)**
   - `breakdown(1,5 · 5)` returns the split strategy with step answers `1 + 0,5`, `5`, `2,5`, `7,5`.
@@ -400,18 +405,18 @@ task → [answer]
   Final wording is reviewed against the `kid-math-pedagogy` skill.
 - **Level tasks** (`decimal-multiply`, 6 slots):
 
-  | Slot | Whole number | Decimal | Example |
+  | Slot | Whole number | Decimal factor | Sheet examples (same pattern) |
   |---|---|---|---|
-  | 1 | 2–9 | one decimal, < 1 | `3 · 0,7` |
-  | 2 | 2–9 | one decimal, ≥ 1 | `1,5 · 4` |
-  | 3 | 2–9 | two decimals, < 1 | `6 · 0,04` |
-  | 4 | 10–90 (tens) | one decimal | `0,3 · 20` |
-  | 5 | 10–90 (tens) | two decimals | `40 · 0,02` |
-  | 6 | 100–500 (hundreds) | one decimal | `500 · 0,9` |
+  | 1 | 2–9 | `0,d` (d 1–9) | `3 · 0,7`, `8 · 0,6`, `0,9 · 6` |
+  | 2 | 2–9 | `0,0d` (d 1–9) | `6 · 0,04`, `4 · 0,08`, `0,03 · 2` |
+  | 3 | 2–6 | `1,5` or `2,5` | *(none on this sheet — the owner's own example `1,5 · 5`; a "half" pattern of the same difficulty)* |
+  | 4 | 20–90 (tens), 25 or 45 | `0,d` | `0,3 · 20`, `25 · 0,1`, `45 · 0,2`, `50 · 0,7` |
+  | 5 | 20–90 (tens) | `0,0d` | `40 · 0,02`, `0,03 · 20`, `40 · 0,08` |
+  | 6 | 200–500 (hundreds) | `0,d` | `0,3 · 200`, `0,6 · 300`, `500 · 0,9` |
 
-  This matches `sources/kap1/multiply-decimals.png` (e.g. `25 · 0,01`, `0,3 · 200`).
-  - **Breakdown for slots 4–6:** the without-the-comma strategy covers them (e.g. `0,3 · 20` →
-    `3 · 20 = 60` → 1 decimal → `6`). The split strategy is used only when the decimal is ≥ 1.
+  The factor order is random (`0,3 · 20` or `20 · 0,3`), as on the sheet.
+  - **Breakdown:** slot 3 uses the split strategy. The other slots use the without-the-comma strategy
+    (e.g. `0,3 · 20` → `3 · 20 = 60` → 1 decimal → `6`).
 
 ## Alternatives considered
 - **Phaser or another game framework:** a stronger engine for platformer action, but an extra ~1 MB
@@ -462,6 +467,10 @@ task → [answer]
 - **2026-10-08 Owner (approved spec as-is):** the policy concerns stand with their proposed
   defaults: the title "Kattklanens matteäventyr", choosing name and colour included, and a step
   revealing its answer after 3 tries.
+
+- **2026-10-08 Owner (chat, after approval):** "numbers … must be of similar vintage. not harder and
+  not (much) easier". Claude amended R9, AC7 and the slot table to the sheet's exact patterns. The
+  "start easier than the sheet" ramp was removed, and so was the loose `≥ 1` decimal slot.
 
 ## Open questions
 1. Game title and cat names: do you or she want to rename them later? This is easy to change in

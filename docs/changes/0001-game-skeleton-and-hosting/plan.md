@@ -60,6 +60,9 @@ Each step ends with `./scripts/verify.sh` green, and a proposed commit `[0001-ga
 3. **Task generator.** Tests first, `tests/tasks/decimal-multiply.test.js` (AC7, AC9), then
    `decimal-multiply.js` and `tasks/index.js`.
    - The tests use 1000 seeds per slot spec, taken from a fixture identical to the 6 slots in the spec.
+     For each slot they assert the sheet pattern: the whole-number set, and that the decimal factor has
+     exactly one non-zero digit (or is `1,5` / `2,5` in slot 3). This keeps tasks "same vintage, not
+     harder".
    - The independent oracle: the integer product of digit strings, with the comma placed by hand.
      It does not use `decimal.js`.
 4. **Breakdown.** Tests first, `tests/tasks/breakdown.test.js` (AC8), then `breakdown.js`.

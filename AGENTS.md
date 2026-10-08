@@ -18,6 +18,7 @@ test material into a playful journey, so practising feels like playing, not like
 - **One level per homework sheet** (each image in `sources/<chapter>/`).
   - A level has a *small* number of tasks: about 5–8, never the whole sheet.
   - Tasks are of the *same type* as the sheet, with fresh numbers (`12 + 11` may become `13 + 9`).
+  - Difficulty is of the same vintage as the sheet: never harder, and at most slightly easier.
 - **Keys:** clearing a level gives a key. All keys in a world unlock the **final boss**.
   - The boss is a last mixed challenge.
   - Beating it shows a summary of everything she cleared in the world.
