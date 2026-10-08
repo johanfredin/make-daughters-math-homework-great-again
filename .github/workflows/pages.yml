@@ -1,5 +1,7 @@
 # Publish site/ to GitHub Pages on every push to main (or by hand), only after verify passes (R2).
 # One-time repo setting: Settings → Pages → Source = "GitHub Actions".
+# The artifact is uploaded in one job and deployed in the next: deploy-pages cannot see an artifact
+# uploaded earlier in the same job.
 name: Pages
 
 on:
@@ -18,27 +20,31 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
       - run: ./scripts/verify.sh
 
-  deploy:
+  build:
     needs: verify
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
     permissions: # only the deploy job may publish
-      contents: read
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
       - id: deployment
         uses: actions/deploy-pages@v4
