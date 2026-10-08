@@ -107,7 +107,7 @@ Each step ends with `./scripts/verify.sh` green, and a proposed commit `[0001-ga
     - no `<script>` without `src`, no `style=` attribute, and no `sources/` files in `site/` (R3, R21)
 11. **Deploy.** Add `.github/workflows/pages.yml`, and update `README.md` and `AGENTS.md`.
 12. **Hand-off.**
-    - Run `/verify` (the verifier plays it in a browser at 375×667 and 1024×768), then
+    - Run `/verify` (the verifier plays it in a browser at iPad 1180×820 + 820×1180 with touch, and 1024×768), then
       `/review-change`.
     - Write `review.md`.
 
@@ -159,7 +159,7 @@ Manual or verifier browser checklist:
 - Walk to "Multiplikation med decimaltal" → clear 6 tasks, deliberately getting one wrong twice and
   using "Dela upp det" → key → "Nycklar: 1/7".
 - Reload → "Fortsätt" keeps the progress. "Börja om" with confirmation resets it.
-- Repeat the run at 375×667 with touch emulation: thumbstick, "Gå in", numpad. No scrollbars and no
+- Repeat the run at iPad size (1180×820 and 820×1180) with touch emulation: thumbstick, "Gå in", numpad. No scrollbars and no
   system keyboard.
 - The console has no CSP errors, and the network panel shows only same-origin requests.
 

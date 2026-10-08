@@ -90,7 +90,7 @@ The player is in 7th grade (årskurs 7) in a Swedish school.
   Use varied names, and none of the names from her class.
 
 ## Touch & layout
-- Phone and tablet first; works in portrait and landscape.
+- iPad (touch) and desktop first; works in portrait and landscape. Phones are not a target.
 - Tap targets ≥ 44 px. Nothing relies on hover.
 - Use a custom on-screen number pad (0–9, `,`, `−`, ⌫, OK) so the phone keyboard never covers the task.
 - Large, readable numbers. Good contrast. Respect `prefers-reduced-motion`.

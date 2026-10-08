@@ -182,7 +182,8 @@ The remaining six levels of World 1, the other camps and the boss are change 000
     replaced by a fresh state and a friendly message is shown. It never crashes.
   - If `localStorage` is unavailable, the game still works for the session.
 - **R17 Touch and access.**
-  - Works on a phone and a tablet, in portrait and landscape, without pinch-zoom.
+  - Works on an iPad (portrait and landscape) and a desktop, without pinch-zoom. Phones are not a
+    target (owner, 2026-10-08).
   - Nothing relies on hover.
   - Respects `prefers-reduced-motion`: no walking animation, and no letter-by-letter text.
   - Task and dialog text uses a readable font of at least 20 px, so pixel styling never makes the
@@ -223,7 +224,8 @@ The remaining six levels of World 1, the other camps and the boss are change 000
   - 7 level nodes, with 6 of them locked
   - the camp
   - a locked boss lair showing "Nycklar: 0/7"
-  - It fits a 375×667 portrait and a 1024×768 landscape viewport with no scrollbars.
+  - It fits an iPad (1180×820 landscape, 820×1180 portrait) and a 1024×768 desktop viewport with no
+    scrollbars. (Phones dropped as a target by the owner, 2026-10-08.)
 - **AC4 (R6)** Given the cat is on the start node:
   - When she pushes the direction of the camp (arrow key, or thumbstick drag on touch), the cat walks
     to it. Enter, or the "Gå in" button, opens the camp.
@@ -471,6 +473,10 @@ task → [answer]
 - **2026-10-08 Owner (chat, after approval):** "numbers … must be of similar vintage. not harder and
   not (much) easier". Claude amended R9, AC7 and the slot table to the sheet's exact patterns. The
   "start easier than the sheet" ramp was removed, and so was the loose `≥ 1` decimal slot.
+
+- **2026-10-08 Owner (chat, during build):** "phone layout you dont need to bother with". The target
+  devices are the iPad and desktop. AC3, R17 and the plan's browser checks were changed from 375×667
+  to iPad sizes.
 
 ## Open questions
 1. Game title and cat names: do you or she want to rename them later? This is easy to change in

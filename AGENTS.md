@@ -36,7 +36,8 @@ test material into a playful journey, so practising feels like playing, not like
   - No framework and no build step, so the deployed files are the source files.
 - **DOM for UI and tasks:** text, buttons and number input stay crisp, accessible and touch-friendly.
 - **SVG / `<canvas>` for the world map and animations.**
-- **Touch first:** must work well on a tablet or phone, as well as with a mouse and keyboard.
+- **Touch first, iPad + desktop:** must work well on an iPad (touch) and on a computer (mouse + keyboard).
+  Phones are not a target (owner, 2026-10-08): do not spend effort on phone layouts.
 - **Progress** is saved in `localStorage` on her device. No accounts and no server.
 - **Hosting:** GitHub Pages from this public repo, serving `site/`. She just opens a link; there is no
   file to send around. Change 0001 sets up the deploy.
