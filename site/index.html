@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#10131f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Kattklanens matteäventyr</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+  <div id="game" data-mode="start">
+    <div id="stage">
+      <canvas id="scene" width="320" height="180"></canvas>
+      <div id="hud" hidden>
+        <span id="hud-name" class="chip"></span>
+        <span id="hud-node" class="chip"></span>
+        <span id="hud-keys" class="chip"></span>
+      </div>
+      <div id="toast" class="chip" role="status" aria-live="polite" hidden></div>
+      <div id="stick" hidden><div id="knob"></div></div>
+      <button id="enter-btn" type="button" hidden></button>
+    </div>
+    <section id="panel" hidden></section>
+    <section id="overlay" hidden></section>
+  </div>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

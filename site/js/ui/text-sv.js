@@ -51,7 +51,6 @@ export const T = {
 
   breakdown: {
     title: "Dela upp det",
-    next: "Nästa steg",
     finish: "Klart!",
     stepOf: (i, n) => `Steg ${i} av ${n}`,
     // Split strategy (decimal ≥ 1), e.g. 1,5 · 5
@@ -88,6 +87,7 @@ export const T = {
     practiceIntro: "Tre övningsuppgifter. Inga nycklar, ingen brådska.",
     practiceDone: "Bra övat! Kom tillbaka när du vill.",
     backToMap: "Tillbaka till kartan",
+    backToCamp: "Tillbaka till lägret",
   },
 
   numpad: {
