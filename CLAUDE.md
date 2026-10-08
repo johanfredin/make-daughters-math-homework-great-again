@@ -48,6 +48,15 @@ Until an intent is approved, do nothing for that change unless asked.
     when the same edit contains "delegated in chat".
   - Commit message: `[<id>] approve <stage> (approval delegated by owner, recorded by Claude)`.
 - Never approve anything without that instruction.
+- **Standing delegation (2026-10-08):** the owner said "you are allowed to approve all changes". Claude
+  approves intent, spec and plan itself, recorded as delegated with that quote. Real owner decisions
+  (pedagogy, game feel) still go to him as questions. Merging and pushing still need his yes.
+
+## Verification budget
+The owner finds long verification slow. Keep it proportionate:
+- Run one verifier and one reviewer round (in parallel).
+- Browser checks: iPad landscape (touch) plus desktop. Add portrait only when the layout changes.
+- Re-check only what failed.
 
 ## Build, verify, review
 1. Implement the approved plan only. Write tests with or before the code, and run `./scripts/verify.sh`
