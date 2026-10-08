@@ -3,8 +3,8 @@ id: 0002-unlocked-maps-and-faster-help
 stage: plan
 status: approved
 spec: docs/changes/0002-unlocked-maps-and-faster-help/spec.md
-approved_by: Johan Fredin (delegated in chat 2026-10-08: "i approve the plan"; recorded by Claude)
-approved_at: 2026-10-08T16:40:10+02:00
+approved_by: Johan Fredin
+approved_at: 2026-10-08T16:47:37+02:00
 ---
 
 # Plan: unlocked maps and faster help
