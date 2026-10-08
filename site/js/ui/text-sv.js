@@ -32,7 +32,6 @@ export const T = {
   },
 
   level: {
-    taskOf: (i, n) => `Uppgift ${i} av ${n}`,
     question: (expr) => `${expr}\u00a0=\u00a0?`,
     answerLabel: "Ditt svar",
     invalid: "Skriv ett tal.",
@@ -41,10 +40,37 @@ export const T = {
     hintGeneric: ["Nästan! Prova igen.", "Inte riktigt. Försök en gång till.", "Ta det lugnt och räkna en gång till."],
     breakdownButton: "Dela upp det",
     praise: ["Snyggt!", "Klockrent!", "Där satt den!", "Bra jobbat!", "Grymt!"],
-    levelDone: "Banan är klar!",
-    keyEarned: "Du fick en nyckel! 🔑",
-    alreadyHaveKey: "Nyckeln har du redan. Bra övning ändå!",
     backToMap: "Tillbaka till kartan",
+  },
+
+  // 0003: levels play the homework sheets in sections; 2/3 solved gives the key
+  sections: {
+    title: "Välj en del",
+    label: (n, range) => `Del ${n}: ${range}`,
+    progress: (solved, total) => `${solved}/${total} lösta`,
+    allSolved: "Allt löst!",
+    keyProgress: (solved, total, need) => `Lösta: ${solved}/${total} – ${need} ger nyckeln`,
+    keyDone: (solved, total) => `Lösta: ${solved}/${total} – nyckeln är din!`,
+    taskLabel: (id) => `Uppgift ${id}`,
+    skip: "Hoppa över",
+    skipHint: "Du kan hoppa över den och ta den sen.",
+    sectionDone: "Delen är klar!",
+    sectionResult: (n, of) => `Du löste ${n} av ${of}.`,
+    keyNow: "Du har löst två tredjedelar – du fick en nyckel! 🔑",
+    backToSections: "Tillbaka till delarna",
+    nothingLeft: "Alla uppgifter här är lösta. Vi tar dem en gång till för övningens skull.",
+  },
+
+  kinds: {
+    estimate: (expr) => `${expr} \u2248 ?`,
+    fraction: "Skriv täljaren:",
+    numberline: (arrow) => `Pil ${arrow}`,
+    numberlineLabel: "Tallinje",
+  },
+
+  sound: {
+    on: "Ljud på",
+    off: "Ljud av",
   },
 
   breakdown: {

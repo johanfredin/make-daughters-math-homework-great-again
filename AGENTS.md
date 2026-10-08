@@ -16,10 +16,12 @@ test material into a playful journey, so practising feels like playing, not like
 - **World map** in the style of *Super Mario Bros 3*: worlds made of levels connected by paths.
 - **One world per chapter or test.** World 1 = `sources/kap1/` (decimals, fractions, rounding, negative numbers).
 - **One level per homework sheet** (each image in `sources/<chapter>/`).
-  - A level has a *small* number of tasks: about 5–8, never the whole sheet.
-  - Tasks are of the *same type* as the sheet, with fresh numbers (`12 + 11` may become `13 + 9`).
-  - Difficulty is of the same vintage as the sheet: never harder, and at most slightly easier.
-- **Keys:** clearing a level gives a key. All keys in a world unlock the **final boss**.
+  - The level plays the sheet's **exact tasks, in sheet order** (owner, 0003): transcribed into
+    `site/worlds/<world>/sheets/<level>.json`. No generated "similar" numbers.
+  - A level is split into short **sections** (about 6–8 tasks, a/b/c groups kept together).
+  - Every computable answer is re-checked by an independent oracle test (`tests/tasks/sheets-oracle.test.js`).
+- **Keys:** a level's key comes once **2/3 of its tasks** are solved; "Hoppa över" skips a task.
+  All keys in a world unlock the **final boss**.
   - The boss is a last mixed challenge.
   - Beating it shows a summary of everything she cleared in the world.
 - **Helper camps** (like the animal buddies in *Donkey Kong Country*): optional stops on the map.
@@ -68,7 +70,8 @@ site/                  deployed as-is (static hosting root)
     ui/                Swedish UI text, components (number pad, fraction visual, number line)
   worlds/
     index.json         list of worlds in journey order
-    <world-id>/world.json   levels → task specs (type + parameters), boss config, helper camps
+    <world-id>/world.json   levels (sheet file + theme), boss config, helper camps
+    <world-id>/sheets/*.json  one homework sheet per level: sections + tasks with answers
 sources/<chapter>/     raw homework photos + inventory.md (input only, NEVER deployed)
 tests/                 node --test, mirrors site/js/ (e.g. tests/tasks/decimal-multiply.test.js)
 docs/                  SDLC artifacts (changes, lessons, templates)
@@ -77,10 +80,9 @@ docs/                  SDLC artifacts (changes, lessons, templates)
   - Adding a new world should only need a new `site/worlds/<id>/world.json`, plus new task types if
     the chapter brings new kinds of problems.
   - No world-specific code in the engine.
-- **Task generators:** pure functions `(params, rng) → { prompt, answer, ... }`.
-  - The random number generator is seeded, so tests can be deterministic.
-  - Generated numbers must stay "nice": the answer must be exact in decimals, with no
-    floating-point noise (`0.1 + 0.2`). Do decimal math on scaled integers.
+- **Answers** are checked exactly (`engine/rational.js`), never with floats (`0.1 + 0.2`).
+- **New homework:** put the photos in `sources/<chapter>/`, transcribe each sheet to a sheet file
+  (zoom into the photo where needed), and let the oracle test catch transcription errors.
 
 ## Conventions
 - Small, focused commits whose message references the change id, e.g. `[0003] add rounding task type`.
@@ -93,8 +95,8 @@ docs/                  SDLC artifacts (changes, lessons, templates)
 - Kid-facing copy follows the `kid-math-pedagogy` skill.
 - No secrets in the repo, no tracking or analytics, no third-party scripts at runtime unless a spec
   approves it.
-- The photos in `sources/` are input for content design, not game assets. They may be public in the
-  repo, but are not copied into `site/`.
+- The photos in `sources/` are never copied into `site/`. Their *tasks* are transcribed into sheet
+  files on the public site (owner, 0003).
 - Claude may commit on `change/<id>` branches. It pushes only after asking the owner and getting a
   yes, and never force-pushes. Merging is the owner's.
 

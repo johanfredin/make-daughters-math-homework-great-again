@@ -1,0 +1,107 @@
+{
+ "intro": "Du behöver inte räkna ut svaret. Välj det alternativ som ger rätt svar.",
+ "sections": [
+  [
+   "1",
+   "2",
+   "3",
+   "4"
+  ],
+  [
+   "5",
+   "6",
+   "7",
+   "8"
+  ]
+ ],
+ "tasks": [
+  {
+   "id": "1",
+   "kind": "choice",
+   "prompt": "Hur mycket får man betala för 0,4 kg äpplen om priset per kilogram är 19 kr?",
+   "options": [
+    "19 / 0,4",
+    "0,4 · 19",
+    "0,4 / 19"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2",
+   "kind": "choice",
+   "prompt": "Hur mycket större är talet 0,7 än talet 0,45?",
+   "options": [
+    "0,7 / 0,45",
+    "0,7 − 0,45",
+    "0,45 / 0,7"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "3",
+   "kind": "choice",
+   "prompt": "I en tävling i längdhopp hoppade Hugo 3,45 m, vilket var 0,2 m längre än vad Marcus hoppade. Hur långt hoppade Marcus?",
+   "options": [
+    "3,45 − 0,2",
+    "3,45 + 0,2",
+    "0,2 · 3,45"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "4",
+   "kind": "choice",
+   "prompt": "Lovisa dividerade ett tal med 200. Hon fick svaret 4,8. Vilket var det tal som Lovisa dividerade?",
+   "options": [
+    "200 / 4,8",
+    "200 · 4,8",
+    "4,8 / 200"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "5",
+   "kind": "choice",
+   "prompt": "En påse med 0,3 kg vindruvor kostar 9,60 kr. Vilket är priset per kilogram?",
+   "options": [
+    "0,3 / 9,6",
+    "0,3 · 9,60",
+    "9,6 / 0,3"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "6",
+   "kind": "choice",
+   "prompt": "Efter första åket i en slalomtävling ledde Frida Hansdotter på tiden 49,65 s. Tvåa var Michaela Shiffrin med fjorton hundradelar sämre tid. Vilken tid hade hon?",
+   "options": [
+    "49,65 + 0,14",
+    "49,65 − 0,14",
+    "49,65 + 0,014"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "7",
+   "kind": "choice",
+   "prompt": "En liter jordgubbar väger 0,6 kg. Hur många liter finns i en hink som väger 3,8 kg om hinken tom väger 4 hg?",
+   "options": [
+    "0,6 · 3,4",
+    "3,4 / 0,6",
+    "3,8 − 0,4 − 0,6"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "8",
+   "kind": "choice",
+   "prompt": "Jesper har kokat 6 liter hallonsylt. Den ska han frysa in i förpackningar som rymmer 4 dl vardera. Hur många förpackningar blir det?",
+   "options": [
+    "6 · 4",
+    "4 / 0,6",
+    "6 / 0,4"
+   ],
+   "answer": 2
+  }
+ ]
+}

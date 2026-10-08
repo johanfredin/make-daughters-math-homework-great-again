@@ -16,7 +16,7 @@ const js = files.filter((f) => f.endsWith(".js"))
 const read = (f) => readFileSync(f, "utf8")
 
 // DOM/canvas modules: not imported in Node (they touch window/document by design).
-const DOM_MODULES = new Set(["js/main.js", "js/engine/scene.js", "js/engine/input.js", "js/engine/dialog.js", "js/ui/numpad.js", "js/ui/screens.js"])
+const DOM_MODULES = new Set(["js/main.js", "js/engine/scene.js", "js/engine/input.js", "js/engine/dialog.js", "js/engine/sound.js", "js/ui/numpad.js", "js/ui/screens.js"])
 
 const importsOf = (src) => [...src.matchAll(/(?:import|export)\s[^"'`]*?from\s*["']([^"']+)["']|import\(\s*["']([^"']+)["']\s*\)/g)].map((m) => m[1] ?? m[2])
 
@@ -83,7 +83,8 @@ test("R1/AC2: no absolute or external URLs in the site", () => {
     assert.doesNotMatch(src, /\b(?:src|href)=["'](?:https?:|\/\/|\/)/, `${rel(f)}: absolute src/href`)
     assert.doesNotMatch(src, /url\(\s*["']?(?:https?:|\/\/|\/)/, `${rel(f)}: absolute url()`)
     assert.doesNotMatch(src, /fetch\(\s*["'](?:https?:|\/)/, `${rel(f)}: absolute fetch`)
-    assert.doesNotMatch(src, /https?:\/\/(?!json\.schemastore)/, `${rel(f)}: external URL`)
+    // the SVG namespace is an identifier, never fetched
+    assert.doesNotMatch(src, /https?:\/\/(?!json\.schemastore|www\.w3\.org\/2000\/svg)/, `${rel(f)}: external URL`)
   }
 })
 

@@ -2,11 +2,15 @@ import { test } from "node:test"
 import assert from "node:assert/strict"
 import { breakdown } from "../../site/js/tasks/breakdown.js"
 import { checkStep } from "../../site/js/tasks/steps.js"
-import { generate } from "../../site/js/tasks/decimal-multiply.js"
-import { mulberry32 } from "../../site/js/engine/rng.js"
+import * as fixed from "../../site/js/tasks/fixed.js"
+import { readdirSync, readFileSync } from "node:fs"
 import { dec, eq } from "../../site/js/engine/decimal.js"
-import { formatNumber } from "../../site/js/ui/number-format.js"
-import { SLOTS } from "./fixtures.js"
+import { formatNumber, parseAnswer } from "../../site/js/ui/number-format.js"
+
+// 0003: the property test runs over every sheet task that offers "Dela upp det" (the generator is gone).
+const SHEETS = new URL("../../site/worlds/kap1/sheets/", import.meta.url)
+const SHEET_TASKS = readdirSync(SHEETS).flatMap((f) => JSON.parse(readFileSync(new URL(f, SHEETS), "utf8")).tasks.map((t) => ({ ...t, type: "fixed", sheet: f })))
+const BREAKABLE = SHEET_TASKS.filter(fixed.canBreakdown)
 
 const answers = (b) =>
   b.steps.map((s) => (s.kind === "choose" ? s.options[s.answerIndex] : formatNumber(s.answer)))
@@ -67,20 +71,21 @@ test("0002: the split strategy is only used for halves; other decimals ≥ 1 cou
 // Numbers that appear in a text, e.g. "0,5 är en halv. Vad är hälften av 6?" → ["0,5", "6"]
 const numbersIn = (s) => (s.match(/\d+(?:[  ]\d{3})*(?:,\d+)?/g) ?? []).map((x) => x.replace(/[  ]/g, " "))
 
-test("AC8 + 0002 AC7: 6 slots × 1000 tasks — last step is the answer, units invariants, no help gives its step's answer", () => {
-  let n = 0
+test("AC8 + 0002 AC7 + 0003: every sheet breakdown — last step is the answer, units invariants, no help gives its step's answer", () => {
   const positions = new Set()
-  for (let seed = 1; n < 6000; seed++) {
-    for (const spec of SLOTS) {
-      const t = generate(spec, mulberry32(seed))
-      const b = breakdown(t.decimalFactor, t.wholeFactor)
+  assert.equal(BREAKABLE.length, 46)
+  for (const task of BREAKABLE) {
+    const t = { text: `${task.sheet} ${task.id}: ${task.text}`, answer: parseAnswer(task.answer) }
+    const b = fixed.breakdown(task)
+    {
       const last = b.steps.at(-1)
       assert.ok(eq(last.answer, t.answer), `${t.text}: last step ${formatNumber(last.answer)}`)
       if (b.strategy === "units") {
         const [count, , choose] = b.steps
-        // step 2 is exactly one times-table fact: count 1–9 times a number with one non-zero digit
+        // step 1 counts 1–9 tiondelar/hundradelar (the decimal has one non-zero digit); step 2 multiplies that count
         assert.ok(/^[1-9]$/.test(formatNumber(count.answer)), `${t.text}: unit count ${formatNumber(count.answer)}`)
-        assert.equal(formatNumber(t.wholeFactor).replace(/[0 ]/g, "").length, 1, `${t.text}: more than one table fact`)
+        // 0003: the old "whole factor has one non-zero digit" check was removed on purpose — the sheets'
+        // own tasks include 25 · 0,1, 45 · 0,2 and 0,1 · 65, which are exact homework, not generated.
         assert.equal(choose.kind, "choose")
         assert.equal(new Set(choose.options).size, 3, `${t.text}: options not distinct`)
         assert.equal(choose.options.filter((o) => o === formatNumber(t.answer)).length, 1, `${t.text}: answer not exactly once`)
@@ -108,7 +113,6 @@ test("AC8 + 0002 AC7: 6 slots × 1000 tasks — last step is the answer, units i
           for (const v of s.visual) assert.ok(inQuestion || !eq(v, s.answer), `${t.text}: visual reveals the answer`)
         }
       }
-      if (++n >= 6000) break
     }
   }
   // amendment: tenths ÷10/answer/×10 puts the answer in the middle; hundredths answer/×10/×100 puts it first

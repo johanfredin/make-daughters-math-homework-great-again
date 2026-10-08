@@ -13,20 +13,21 @@ test("World 1 is valid", () => {
   assert.deepEqual(validateWorld(world), [])
 })
 
-test("AC3: World 1 has 7 levels, 1 camp, 1 boss with keysToBoss 7, 1 playable level", () => {
+test("AC3 + 0003: World 1 has 7 levels, all playable from their sheets with a theme, 1 camp, 1 boss", () => {
   assert.equal(levels(world).length, 7)
   assert.equal(world.nodes.filter((n) => n.kind === "camp").length, 1)
   assert.equal(world.nodes.filter((n) => n.kind === "boss").length, 1)
   assert.equal(world.keysToBoss, 7)
-  assert.deepEqual(levels(world).filter((n) => n.playable).map((n) => n.id), ["multiplikation"])
+  assert.ok(levels(world).every((n) => n.playable && n.sheet === `sheets/${n.id}.json` && n.theme))
+  assert.equal(new Set(levels(world).map((n) => n.theme)).size, 7, "each level its own theme")
 })
 
 test("AC16: removing a required field makes validation fail", () => {
   const mutations = [
     (w) => delete w.nodes[1].kind,
     (w) => delete w.nodes[1].x,
-    (w) => delete w.nodes[2].tasks,
-    (w) => (w.nodes[2].tasks[0].type = "nope"),
+    (w) => delete w.nodes[2].sheet,
+    (w) => (w.nodes[2].theme = "nope"),
     (w) => delete w.nodes.find((n) => n.kind === "camp").mentor,
     (w) => w.paths.push(["start", "ghost"]),
     (w) => (w.paths = w.paths.filter(([a, b]) => b !== "boss")),

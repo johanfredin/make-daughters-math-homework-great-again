@@ -4,6 +4,8 @@ import { validateWorld, nodeById, tryMove } from "./engine/world.js"
 import * as P from "./engine/progress.js"
 import * as L from "./engine/level.js"
 import * as W from "./engine/walk-queue.js"
+import { validateSheet, sectionTasks, groupOf } from "./engine/sheet.js"
+import { createSound } from "./engine/sound.js"
 import { mulberry32, randomSeed } from "./engine/rng.js"
 import { createScene } from "./engine/scene.js"
 import { createInput } from "./engine/input.js"
@@ -22,6 +24,7 @@ const el = {
   hudName: $("hud-name"),
   hudNode: $("hud-node"),
   hudKeys: $("hud-keys"),
+  sound: $("sound-btn"),
   toast: $("toast"),
   stick: $("stick"),
   knob: $("knob"),
@@ -59,6 +62,8 @@ const app = {
   bumpUntil: 0,
   level: null,
   levelNode: null,
+  sheets: {}, // levelId → homework sheet (0003)
+  keyJustEarned: false,
   campNode: null,
   anim: null,
   resetNotice: false,
@@ -99,6 +104,16 @@ function updateHud() {
   el.hudName.textContent = app.state.name ?? T.start.defaultName
   el.hudNode.textContent = node.kind === "start" ? app.world.name : node.name
   el.hudKeys.textContent = T.map.keys(P.keys(app.state), app.world.keysToBoss)
+  el.sound.textContent = app.state.sound ? T.sound.on : T.sound.off
+  el.sound.setAttribute("aria-pressed", String(app.state.sound))
+}
+
+function toggleSound() {
+  app.state = P.withSound(app.state, !app.state.sound)
+  sound.setOn(app.state.sound)
+  save()
+  updateHud()
+  sound.correct()
 }
 
 function placeCatOn(node) {
@@ -170,75 +185,146 @@ function toMap() {
   }
 }
 
-// ---------- Level (and camp practice) ----------
+// ---------- Level: sections of the homework sheet (and camp practice) ----------
+
+const sheetOf = (node) => app.sheets[node.id]
+
+function rangeLabel(tasks) {
+  const first = groupOf(tasks[0].id)
+  const last = groupOf(tasks.at(-1).id)
+  return first === last ? first : `${first}–${last}`
+}
 
 function enterLevel(node) {
   app.levelNode = node
-  app.level = L.startLevel(node.tasks, app.rng, { startIndex: app.state.levelTask[node.id] ?? 0 })
-  if (app.level.done) app.level = L.startLevel(node.tasks, app.rng)
   setMode("level")
-  app.anim = { foeX: 230, foeVisible: true, start: 0, kind: "idle" }
-  showTask("")
+  app.anim = null
+  showSections()
 }
 
-function leaveLevel() {
+function showSections() {
+  const node = app.levelNode
+  const sheet = sheetOf(node)
+  const solved = P.solvedIds(app.state, node.id)
+  const total = sheet.tasks.length
+  const need = P.keyThreshold(total)
+  V.sectionsPanel(el.panel, {
+    title: node.name,
+    intro: sheet.intro,
+    keyText: app.state.cleared.includes(node.id) ? T.sections.keyDone(solved.length, total) : T.sections.keyProgress(solved.length, total, need),
+    sections: sheet.sections.map((ids, i) => {
+      const n = ids.filter((id) => solved.includes(id)).length
+      return {
+        label: T.sections.label(i + 1, rangeLabel(sectionTasks(sheet, i))),
+        progress: n === ids.length ? T.sections.allSolved : T.sections.progress(n, ids.length),
+        done: n === ids.length,
+      }
+    }),
+    onPick: playSection,
+    onBack: toMap,
+  })
+}
+
+function playSection(i) {
+  const node = app.levelNode
+  const tasks = sectionTasks(sheetOf(node), i)
+  app.level = L.startSection(tasks, { solved: P.solvedIds(app.state, node.id) })
+  let intro = ""
+  if (app.level.done) {
+    app.level = L.startSection(tasks, { all: true }) // everything solved: play it again for practice
+    intro = T.sections.nothingLeft
+  }
+  app.keyJustEarned = false
+  app.anim = { kind: "idle" }
+  showTask(intro)
+}
+
+function leaveTask() {
   if (app.level?.practice) showCampMenu()
-  else toMap()
+  else {
+    app.level = null
+    showSections()
+  }
 }
 
 function showTask(feedback) {
   const lv = app.level
   V.taskPanel(el.panel, {
     title: lv.practice ? app.campNode.name : app.levelNode.name,
+    label: T.sections.taskLabel(lv.task.label ?? lv.task.id),
     done: lv.index,
     total: lv.total,
-    progressText: T.level.taskOf(lv.index + 1, lv.total),
-    question: T.level.question(lv.task.text),
+    task: lv.task,
     feedback,
     offerBreakdown: lv.breakdownOffered,
-    backText: lv.practice ? T.camp.backToCamp : T.level.backToMap,
+    backText: lv.practice ? T.camp.backToCamp : T.sections.backToSections,
     onSubmit: submitAnswer,
+    onChoose: submitAnswer,
+    onSkip: lv.practice ? null : skipTask,
     onBreakdown: openLevelBreakdown,
-    onBack: leaveLevel,
+    onBack: leaveTask,
   })
 }
 
 const HINTS = { comma: () => T.level.hintComma, plus: () => T.level.hintPlus, generic: () => oneOf(T.level.hintGeneric) }
 
-function submitAnswer(text) {
-  const r = L.answerTask(app.level, text)
+function submitAnswer(input) {
+  const r = L.answerTask(app.level, input)
   app.level = r.lv
   if (r.result.status === "invalid") return showTask(T.level.invalid)
   if (r.result.status === "wrong") {
+    sound.wrong()
     const hint = HINTS[r.result.hint]()
-    return showTask(hint) // the "Dela upp det" button is always there (0002 R5)
+    // no "Dela upp det" for this task: after 3 misses, point her to "Hoppa över" (0003 review)
+    const stuck = !app.level.breakdownOffered && !app.level.practice && app.level.tries >= 3
+    return showTask(stuck ? `${hint} ${T.sections.skipHint}` : hint)
   }
-  taskCleared()
+  taskSolved()
 }
 
-function taskCleared() {
+function skipTask() {
+  app.level = L.skipTask(app.level)
+  if (app.level.done) finishSection()
+  else showTask("")
+}
+
+/** Save the solved task at once, and award the key as soon as 2/3 of the level is solved (0003 R7). */
+function taskSolved() {
+  sound.correct()
   pounce()
+  let keyNow = false
   if (!app.level.practice) {
-    app.state = P.setTaskIndex(app.state, app.levelNode.id, app.level.index)
+    const node = app.levelNode
+    app.state = P.markSolved(app.state, node.id, app.level.solvedNow)
+    const r = P.awardKeyIfEarned(app.state, node.id, sheetOf(node).tasks.length)
+    app.state = r.state
+    if (r.keyAwarded) {
+      app.keyJustEarned = true
+      keyNow = true
+      sound.key()
+    }
     save()
   }
-  if (app.level.done) finishLevel()
-  else showTask(oneOf(T.level.praise))
+  if (app.level.done) finishSection()
+  else showTask(keyNow ? T.sections.keyNow : oneOf(T.level.praise)) // celebrate the key the moment it comes
 }
 
-function finishLevel() {
-  if (app.level.practice) {
+function finishSection() {
+  const lv = app.level
+  if (lv.practice) {
     return V.messagePanel(el.panel, { title: oneOf(T.level.praise), text: T.camp.practiceDone, buttonText: T.camp.backToCamp, onButton: showCampMenu })
   }
-  const r = L.reward(app.world, app.state, app.level, app.levelNode.id)
-  app.state = r.state
-  save()
-  if (r.keyAwarded) app.anim = { kind: "key", start: performance.now() }
+  if (app.keyJustEarned) app.anim = { kind: "key", start: performance.now() }
+  const result = T.sections.sectionResult(lv.solvedNow.length, lv.total)
   V.messagePanel(el.panel, {
-    title: T.level.levelDone,
-    text: r.keyAwarded ? T.level.keyEarned : T.level.alreadyHaveKey,
-    buttonText: T.level.backToMap,
-    onButton: toMap,
+    title: T.sections.sectionDone,
+    text: app.keyJustEarned ? `${result} ${T.sections.keyNow}` : result,
+    buttonText: T.sections.backToSections,
+    onButton: () => {
+      app.level = null
+      app.anim = null
+      showSections()
+    },
   })
 }
 
@@ -253,9 +339,9 @@ function openLevelBreakdown() {
       app.level = r.lv
       return r.result
     },
-    onFinished: () => taskCleared(),
-    onBack: leaveLevel,
-    backText: app.level.practice ? T.camp.backToCamp : T.level.backToMap,
+    onFinished: () => taskSolved(),
+    onBack: leaveTask,
+    backText: app.level.practice ? T.camp.backToCamp : T.sections.backToSections,
   })
 }
 
@@ -339,11 +425,11 @@ function showCampMenu() {
       standalone(breakdown, T.camp.showMeIntro(breakdown.expr))
     },
     onAnother: () => {
-      const ex = L.campExample(practiceLevel, app.rng)
+      const ex = L.campExample(sheetOf(practiceLevel).tasks, app.rng)
       standalone(ex.breakdown, T.camp.anotherIntro(ex.task.text))
     },
     onPractice: () => {
-      app.level = L.campPractice(practiceLevel, app.rng)
+      app.level = L.campPractice(sheetOf(practiceLevel).tasks, app.rng)
       showTask(T.camp.practiceIntro)
     },
   })
@@ -352,13 +438,15 @@ function showCampMenu() {
 // ---------- Animation ----------
 
 function pounce() {
-  if (reducedMotion() || app.mode !== "level") return
+  if (app.mode !== "level") return
+  sound.win()
+  if (reducedMotion()) return
   app.anim = { kind: "pounce", start: performance.now() }
 }
 
 function levelView(now) {
   const foeKind = app.levelNode?.foe ?? "rat"
-  const base = { fur: fur(), catX: 40, catY: 83, catFrame: Math.floor(now / 500) % 2, foe: { kind: foeKind, x: 230, y: 83, visible: true, flip: false }, key: null, time: now }
+  const base = { fur: fur(), theme: app.levelNode?.theme, catX: 40, catY: 83, catFrame: Math.floor(now / 500) % 2, foe: { kind: foeKind, x: 230, y: 83, visible: true, flip: false }, key: null, burst: null, time: now }
   const a = app.anim
   if (a?.kind === "key") {
     // celebration (R8): the key floats above the cat; no foe left
@@ -371,6 +459,7 @@ function levelView(now) {
     app.anim = null
     return base
   }
+  if (t < 0.8) base.burst = { x: 254, y: 100, t: t / 0.8 } // sparkles where the foe stood (0003 R11)
   if (t < 0.5) {
     // leap toward the foe in an arc
     const p = t * 2
@@ -465,6 +554,8 @@ function showSetup() {
 
 // ---------- Boot ----------
 
+const sound = createSound(true)
+el.sound.addEventListener("click", toggleSound)
 const scene = createScene(el.canvas)
 const input = createInput({ root: el.game, stick: el.stick, knob: el.knob, enterButton: el.enter }, { enabled: () => app.mode === "map", onDirection, onEnter })
 el.enter.textContent = T.map.enter
@@ -484,6 +575,14 @@ async function boot() {
     const world = await fetchJson(new URL(index.worlds[0].path, indexUrl))
     const errors = validateWorld(world)
     if (errors.length) throw new Error(`invalid world: ${errors.join("; ")}`)
+    const worldUrl = new URL(index.worlds[0].path, indexUrl)
+    const playable = world.nodes.filter((n) => n.kind === "level" && n.playable)
+    const sheets = await Promise.all(playable.map((n) => fetchJson(new URL(n.sheet, worldUrl))))
+    playable.forEach((n, i) => {
+      const problems = validateSheet(sheets[i])
+      if (problems.length) throw new Error(`invalid sheet ${n.sheet}: ${problems.join("; ")}`)
+      app.sheets[n.id] = sheets[i]
+    })
     app.world = world
   } catch (e) {
     console.error(e)
@@ -494,6 +593,7 @@ async function boot() {
   const { state, reset } = P.load(app.storage, app.world)
   app.state = state
   app.resetNotice = reset
+  sound.setOn(state.sound)
   placeCatOn(currentNode())
   showStart()
   requestAnimationFrame(frame)

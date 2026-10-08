@@ -1,45 +1,53 @@
-// Level state machine (R7, R8, R10, R13). Pure: the UI calls these and renders the result.
-//
-// task → answer                ("Dela upp det" is offered from the start when the task type has one)
-//   correct            → next task (or done)
+// Level state machine (0001 R7, 0003 R5/R6). Pure: the UI calls these and renders the result.
+// A run plays one section's unsolved sheet tasks in order:
+//   correct            → solved, next task (or done)
 //   wrong              → hint
-//   breakdown finished → the task counts as cleared
+//   skip               → next task, not solved (it comes back next time)
+//   breakdown finished → solved
 import { taskType } from "../tasks/index.js"
 import { checkStep } from "../tasks/steps.js"
-import { clearLevel } from "./progress.js"
 import { pick } from "./rng.js"
 
 export const REVEAL_STEP_AFTER = 3
 export const PRACTICE_TASKS = 3
 
+/** "Dela upp det" when the task type has a breakdown for this task (fixed tasks: decimal · whole). */
+export function hasBreakdown(task) {
+  const type = taskType(task.type)
+  return typeof type.breakdown === "function" && (type.canBreakdown ? type.canBreakdown(task) : true)
+}
+
 function withTask(lv, index) {
-  if (index >= lv.specs.length) return { ...lv, index, task: null, tries: 0, breakdownOffered: false, breakdown: null, done: true }
-  const spec = lv.specs[index]
-  const task = { ...taskType(spec.type).generate(spec, lv.rng), type: spec.type } // the registry key is the truth
+  if (index >= lv.queue.length) return { ...lv, index, task: null, tries: 0, breakdownOffered: false, breakdown: null, done: true }
+  const task = { ...lv.queue[index], type: lv.queue[index].type ?? "fixed" }
   return { ...lv, index, task, tries: 0, breakdownOffered: hasBreakdown(task), breakdown: null, done: false }
 }
 
-export function startLevel(specs, rng, { startIndex = 0, practice = false } = {}) {
-  const lv = { specs, rng, practice, total: specs.length }
-  return withTask(lv, Math.min(startIndex, specs.length))
+/** Play `tasks` (a section), skipping those already solved unless `all`. */
+export function startSection(tasks, { solved = [], practice = false, all = false } = {}) {
+  const queue = all ? tasks : tasks.filter((t) => !solved.includes(t.id))
+  return withTask({ queue, practice, total: queue.length, solvedNow: [] }, 0)
 }
+
+const solve = (lv) => ({ ...lv, solvedNow: [...lv.solvedNow, lv.task.id] })
 
 /** → { lv, result: { status: "correct" | "wrong" | "invalid", hint?, offerBreakdown? } } */
 export function answerTask(lv, input) {
   if (lv.done || lv.breakdown) throw new Error("answerTask: no open task")
   const r = taskType(lv.task.type).check(lv.task, input)
   if (r.status === "invalid") return { lv, result: r }
-  if (r.status === "correct") return { lv: withTask(lv, lv.index + 1), result: r }
+  if (r.status === "correct") return { lv: withTask(solve(lv), lv.index + 1), result: r }
   return { lv: { ...lv, tries: lv.tries + 1 }, result: { ...r, offerBreakdown: lv.breakdownOffered } }
 }
 
-/** A task type may offer "Dela upp det" by exporting breakdown(task); the engine knows nothing else about it. */
-export function hasBreakdown(task) {
-  return typeof taskType(task.type).breakdown === "function"
+/** "Hoppa över": move on without solving (0003 R6). */
+export function skipTask(lv) {
+  if (lv.done || lv.breakdown) throw new Error("skipTask: no open task")
+  return withTask(lv, lv.index + 1)
 }
 
 export function openBreakdown(lv) {
-  if (!lv.breakdownOffered) throw new Error("openBreakdown: not offered yet")
+  if (!lv.breakdownOffered) throw new Error("openBreakdown: not offered")
   return { ...lv, breakdown: startBreakdown(taskType(lv.task.type).breakdown(lv.task)) }
 }
 
@@ -68,33 +76,25 @@ export function answerBreakdown(run, input) {
 
 export const currentStep = (lv) => lv.breakdown.data.steps[lv.breakdown.step]
 
-/** Breakdown inside a level: finishing it clears the task. → { lv, result } */
+/** Breakdown inside a level: finishing it solves the task. → { lv, result } */
 export function answerStep(lv, input) {
   const { run, result } = answerBreakdown(lv.breakdown, input)
   if (!result.finished) return { lv: { ...lv, breakdown: run }, result }
-  return { lv: withTask(lv, lv.index + 1), result: { ...result, taskCleared: true } }
+  return { lv: withTask(solve(lv), lv.index + 1), result: { ...result, taskCleared: true } }
 }
 
-/** Key and unlock for a finished level; practice and unfinished levels give nothing. */
-export function reward(world, state, lv, levelId) {
-  if (!lv.done || lv.practice) return { state, keyAwarded: false }
-  return clearLevel(world, state, levelId)
+// ---- Camp: practice and examples come from a level's own sheet tasks that can be broken down ----
+
+const withBreakdown = (tasks) => tasks.map((t) => ({ ...t, type: t.type ?? "fixed" })).filter(hasBreakdown)
+
+export function campPractice(tasks, rng) {
+  const pool = withBreakdown(tasks)
+  return startSection(Array.from({ length: PRACTICE_TASKS }, () => pick(rng, pool)), { practice: true, all: true })
 }
 
-// ---- Camp helpers: everything comes from the level's own specs (owner edit to R13) ----
-
-export function campPractice(levelNode, rng) {
-  const specs = Array.from({ length: PRACTICE_TASKS }, () => pick(rng, levelNode.tasks))
-  return startLevel(specs, rng, { practice: true })
-}
-
-/** An example from the level's own specs, limited to task types that can be broken down. */
-export function campExample(levelNode, rng) {
-  const specs = levelNode.tasks.filter((s) => typeof taskType(s.type).breakdown === "function")
-  const spec = pick(rng, specs)
-  const type = taskType(spec.type)
-  const task = type.generate(spec, rng)
-  return { spec, task, breakdown: type.breakdown(task) }
+export function campExample(tasks, rng) {
+  const task = pick(rng, withBreakdown(tasks))
+  return { task, breakdown: taskType(task.type).breakdown(task) }
 }
 
 /** The camp's fixed demo ("Visa mig hur"), described in world.json as { type, ...task fields }. */

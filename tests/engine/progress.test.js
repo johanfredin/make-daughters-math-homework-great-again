@@ -22,11 +22,11 @@ const throwingStorage = {
 }
 
 // 0002 replaces 0001's "6 of 7 levels locked" (R1: no unlocking order any more).
-test("0002 AC1: no level is locked by order; 6 unbuilt levels are coming soon; the den is locked", () => {
+// 0003: every level is built from its sheet, so nothing is "coming soon"; only the den is locked.
+test("0002 AC1 + 0003: no level is locked or coming soon; the den is locked", () => {
   const s = P.freshState(world)
   assert.deepEqual(levels(world).filter((n) => P.isLocked(world, s, n)), [])
-  assert.equal(levels(world).filter((n) => P.isComingSoon(n)).length, 6)
-  assert.ok(!P.isComingSoon(world.nodes.find((n) => n.id === "multiplikation")))
+  assert.deepEqual(levels(world).filter((n) => P.isComingSoon(n)), [])
   assert.ok(P.isLocked(world, s, world.nodes.find((n) => n.kind === "boss")))
   assert.equal(P.keys(s), 0)
   assert.equal(s.nodeId, "start")
@@ -37,7 +37,7 @@ test("0002: enterReason — coming soon for unbuilt levels, boss locked until al
   const s = P.freshState(world)
   const reason = P.enterReason(world, s)
   const node = (id) => world.nodes.find((n) => n.id === id)
-  assert.equal(reason(node("rakna")), "comingSoon")
+  assert.equal(reason(node("rakna")), null, "0003: every level can be entered")
   assert.equal(reason(node("boss")), "bossLocked")
   assert.equal(reason(node("camp-mult")), null)
   assert.equal(reason(node("multiplikation")), null)
@@ -45,25 +45,24 @@ test("0002: enterReason — coming soon for unbuilt levels, boss locked until al
   assert.equal(P.enterReason(world, allKeys)(node("boss")), null)
 })
 
-// 0002: the unlock assertion is gone with the unlock chain (R1); the key-once rule stays.
-test("AC5: clearing a level gives one key; replay gives no second key", () => {
-  let s = P.freshState(world)
-  let r = P.clearLevel(world, s, "multiplikation")
-  assert.equal(r.keyAwarded, true)
-  s = r.state
-  assert.equal(P.keys(s), 1)
-  assert.deepEqual(s.unlocked, [], "unlocked is kept for old code but never written")
-  r = P.clearLevel(world, s, "multiplikation")
-  assert.equal(r.keyAwarded, false)
-  assert.equal(P.keys(r.state), 1)
+// 0003: keys come from solving 2/3 of a level (tests/engine/level.test.js); here: the save shape.
+test("0003: saves keep unlocked/levelTask for old code, and solved/sound for the new", () => {
+  const storage = memoryStorage()
+  const s = P.withSound(P.markSolved(P.freshState(world), "multiplikation", ["1a", "1b"]), false)
+  P.save(storage, s)
+  const raw = JSON.parse(storage.data[P.STORAGE_KEY])
+  assert.deepEqual(raw.unlocked, [])
+  assert.deepEqual(raw.levelTask, {})
+  assert.deepEqual(raw.solved, { multiplikation: ["1a", "1b"] })
+  assert.equal(raw.sound, false)
+  assert.deepEqual(P.load(storage, world).state, s)
 })
 
 test("save → load round-trips", () => {
   const storage = memoryStorage()
   let s = P.freshState(world)
-  s = P.clearLevel(world, s, "multiplikation").state
+  s = P.markSolved(s, "multiplikation", ["1a"])
   s = P.withCat(P.moveTo(s, "camp-mult"), { name: "Misse", fur: 2 })
-  s = P.setTaskIndex(s, "multiplikation", 3)
   assert.equal(P.save(storage, s), true)
   const { state, reset } = P.load(storage, world)
   assert.equal(reset, false)
@@ -80,11 +79,13 @@ test("0002 AC4: a save from 0001 (with unlocked) loads with keys and position ke
   assert.equal(P.keys(state), 1)
   assert.equal(state.nodeId, "multiplikation")
   assert.equal(state.name, "Misse")
+  assert.deepEqual(state.solved, {}, "0003 fields default for old saves")
+  assert.equal(state.sound, true)
 })
 
 test("0002: saves keep an unlocked array so 0001 code could still read them (rollback safety)", () => {
   const storage = memoryStorage()
-  P.save(storage, P.clearLevel(world, P.freshState(world), "multiplikation").state)
+  P.save(storage, P.freshState(world))
   assert.deepEqual(JSON.parse(storage.data[P.STORAGE_KEY]).unlocked, [])
 })
 
@@ -98,6 +99,9 @@ test("AC14: corrupt, wrong-typed or unknown-version data starts fresh with reset
     JSON.stringify({ ...P.freshState(world), name: 42 }),
     JSON.stringify({ ...P.freshState(world), levelTask: { multiplikation: -1 } }),
     JSON.stringify(null),
+    JSON.stringify({ ...P.freshState(world), solved: { nowhere: ["1a"] } }),
+    JSON.stringify({ ...P.freshState(world), solved: { rakna: [1] } }),
+    JSON.stringify({ ...P.freshState(world), sound: "yes" }),
   ]
   for (const raw of bad) {
     const { state, reset } = P.load(memoryStorage({ [P.STORAGE_KEY]: raw }), world)

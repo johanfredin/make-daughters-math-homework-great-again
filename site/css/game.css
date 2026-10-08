@@ -207,6 +207,28 @@ input[type="text"] {
 }
 .chip { padding: 4px 12px; font-size: 18px; font-weight: 700; }
 #hud-keys { color: var(--accent); }
+.chip-btn { pointer-events: auto; min-height: 48px; font: inherit; font-size: 18px; font-weight: 700; color: var(--text); cursor: pointer; touch-action: manipulation; }
+
+/* 0003: sheet tasks — prompts, stacked fractions, number line, sections, skip */
+.task-prompt { margin: 8px 0 0; font-size: 20px; line-height: 1.35; }
+.frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 2px; line-height: 1.05; }
+.frac-top { border-bottom: 3px solid currentColor; padding: 0 4px; }
+.frac-bottom { padding: 0 4px; }
+.frac-mixed { margin-left: 3px; }
+.question .frac { font-size: 0.8em; }
+.numberline { width: 100%; max-width: 560px; display: block; margin: 8px auto 0; }
+.nl-axis, .nl-tick, .nl-arrow-line { stroke: var(--text); stroke-width: 2; }
+.nl-tick { stroke-width: 1.5; }
+.nl-label { fill: var(--text); font-size: 14px; text-anchor: middle; }
+.nl-arrow { fill: var(--danger); }
+.nl-arrow-line { stroke: var(--danger); stroke-width: 3; }
+.nl-letter { fill: var(--accent); font-size: 18px; font-weight: 800; text-anchor: middle; }
+.key-progress { margin: 8px 0; font-size: 20px; font-weight: 700; color: var(--accent); text-align: center; }
+.sections-title { margin: 12px 0 0; font-size: 18px; color: var(--muted); }
+.btn-section { display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: left; }
+.btn-section.done { border-color: var(--good); }
+.section-progress { font-size: 16px; color: var(--muted); }
+.btn-skip { opacity: 0.85; }
 
 #toast {
   position: absolute;

@@ -22,6 +22,18 @@ const COLORS = {
   groundDark: "#3f7f36",
 }
 
+// Level themes (0003 R9): sky bands, meadow, ground, tree colours and the map stone. Keys match world.js THEMES.
+const THEMES = {
+  skog: { sky: ["#7cc4ec", "#a6d8f2", "#cdebf7"], meadow: "#74b85e", ground: "#5aa04a", groundDark: "#3f7f36", tree: { g: "#3f8f3f", G: "#63b15a", D: "#2c6a33" }, stone: "#cfc6ad" },
+  strand: { sky: ["#5fb8ff", "#8fd0ff", "#c4e8ff"], meadow: "#3ea7d6", ground: "#f0d58a", groundDark: "#c9a95c", tree: { g: "#2f9e57", G: "#5cc77a", D: "#1f6e3c" }, stone: "#f3e2b0" },
+  host: { sky: ["#f2b36b", "#f6cb8f", "#fae0b8"], meadow: "#c98a3a", ground: "#9b6b32", groundDark: "#6e4a22", tree: { g: "#d2632a", G: "#f09a3e", D: "#9c3f1c" }, stone: "#e7c49a" },
+  sno: { sky: ["#9fb7d6", "#c3d3e8", "#e3ecf6"], meadow: "#e8f0f8", ground: "#ffffff", groundDark: "#c9d6e6", tree: { g: "#2f6e5b", G: "#e8f2f8", D: "#1e4a3e" }, stone: "#e3ecf6" },
+  oken: { sky: ["#f7c35f", "#fad889", "#fde9b6"], meadow: "#e9c27a", ground: "#e2b25e", groundDark: "#b8873c", tree: { g: "#7d9a3a", G: "#a7c25a", D: "#5a7028" }, stone: "#f0d6a0" },
+  natt: { sky: ["#141a3a", "#202a55", "#2e3a6e"], meadow: "#2c5a3a", ground: "#1f4a2c", groundDark: "#12301c", tree: { g: "#1f5a36", G: "#3f8a56", D: "#103a22" }, stone: "#9aa4c8" },
+  grotta: { sky: ["#2a2230", "#3a3040", "#4a3e52"], meadow: "#5a4e5e", ground: "#6b5f6f", groundDark: "#463b4a", tree: { g: "#7a6f86", G: "#9a90a6", D: "#544a5e" }, stone: "#b9aec4" },
+}
+const theme = (name) => THEMES[name] ?? THEMES.skog
+
 const makeCanvas = (w, h) => {
   const c = document.createElement("canvas")
   c.width = w
@@ -150,7 +162,7 @@ export function createScene(canvas) {
       ctx.fillStyle = pulse ? COLORS.ring : S.OUTLINE
       ctx.fillRect(x - 7, y - 6, 14, 12)
       ctx.fillRect(x - 6, y - 7, 12, 14)
-      ctx.fillStyle = soon ? COLORS.stoneSoon : COLORS.stone
+      ctx.fillStyle = soon ? COLORS.stoneSoon : node.theme ? theme(node.theme).stone : COLORS.stone
       ctx.fillRect(x - 6, y - 5, 12, 10)
       ctx.fillRect(x - 5, y - 6, 10, 12)
       ctx.fillStyle = COLORS.stoneDark
@@ -195,34 +207,38 @@ export function createScene(canvas) {
 
   // ---- Side scenes: level (cat vs foe) and camp ----
 
-  function drawBackdrop(time) {
-    const bands = [COLORS.sky1, COLORS.sky2, COLORS.sky3]
-    bands.forEach((c, i) => {
+  function drawBackdrop(time, themeName) {
+    const th = theme(themeName)
+    th.sky.forEach((c, i) => {
       ctx.fillStyle = c
       ctx.fillRect(0, i * 30, MAP_W, 30)
     })
-    ctx.fillStyle = COLORS.grassLight // meadow behind the tree line
+    ctx.fillStyle = th.meadow // meadow (or sea, sand, snow …) behind the tree line
     ctx.fillRect(0, 90, MAP_W, 38)
-    const tree = sprite("tree", S.TREE.rows, S.TREE.palette)
+    const tree = sprite(`tree-${themeName ?? "skog"}`, S.TREE.rows, { ...S.TREE.palette, ...th.tree })
     for (let x = -8; x < MAP_W; x += 22) draw(tree, x + ((x * 7) % 5), 58 + ((x * 3) % 6), { scale: 2 })
-    ctx.fillStyle = COLORS.ground
+    ctx.fillStyle = th.ground
     ctx.fillRect(0, 128, MAP_W, MAP_H - 128)
-    ctx.fillStyle = COLORS.groundDark
+    ctx.fillStyle = th.groundDark
     for (let x = 0; x < MAP_W; x += 6) ctx.fillRect(x + (hash(x, 1) % 4), 128 + (hash(x, 2) % 40), 2, 1)
     ctx.fillRect(0, 128, MAP_W, 2)
   }
 
   const FOE_SPRITES = { rat: S.RAT } // keep in sync with world.js FOES
 
-  /** view: { fur, catX, catY, catFrame, foe: {kind, x, y, visible, flip}, key: {x, y, sparkle} | null, time } — 3× sprites */
+  /**
+   * view: { fur, theme, catX, catY, catFrame, foe: {kind, x, y, visible, flip}, key: {x, y, sparkle} | null,
+   *         burst: {x, y, t} | null, time } — 3× sprites
+   */
   function drawLevel(view) {
-    drawBackdrop(view.time)
+    drawBackdrop(view.time, view.theme)
     const cat = catImage(view.fur, "right", view.catFrame ?? 0)
     draw(cat, view.catX, view.catY, { scale: 3 })
     if (view.foe?.visible) {
       const foe = FOE_SPRITES[view.foe.kind] ?? S.RAT
       draw(sprite(`foe-${view.foe.kind}`, foe.rows, foe.palette), view.foe.x, view.foe.y, { scale: 3, flip: view.foe.flip })
     }
+    if (view.burst) drawBurst(view.burst)
     if (view.key) {
       draw(sprite("key", S.KEY.rows, S.KEY.palette), view.key.x, view.key.y, { scale: 3 })
       if (view.key.sparkle) {
@@ -232,6 +248,18 @@ export function createScene(canvas) {
           ctx.fillRect(Math.round(view.key.x + 21 + Math.cos(a) * 30), Math.round(view.key.y + 9 + Math.sin(a) * 18), 2, 2)
         }
       }
+    }
+  }
+
+  /** A burst of pixel sparkles for a right answer (0003 R11); t runs 0 → 1. */
+  function drawBurst({ x, y, t }) {
+    const colors = ["#fff6c2", "#ffd23f", "#7ad46a", "#73c2ff"]
+    for (let i = 0; i < 12; i++) {
+      const a = (i * Math.PI) / 6
+      const r = 6 + t * 34
+      ctx.fillStyle = colors[i % colors.length]
+      const size = t < 0.7 ? 3 : 2
+      ctx.fillRect(Math.round(x + Math.cos(a) * r), Math.round(y + Math.sin(a) * r * 0.8), size, size)
     }
   }
 
