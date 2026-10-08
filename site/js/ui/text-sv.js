@@ -60,13 +60,27 @@ export const T = {
     halfHelp: (b) => `0,5 är en halv. Vad är hälften av ${b}?`,
     sumPrompt: (x, y) => `${x} + ${y}\u00a0=\u00a0?`,
     sumHelp: "Lägg ihop de två delarna.",
-    // Without-the-comma strategy (decimal < 1), e.g. 0,04 · 6
-    noCommaPrompt: (d, b) => `Räkna utan kommat: ${d} · ${b}\u00a0=\u00a0?`,
-    noCommaHelp: "Låtsas att kommat inte finns, och strunta i nollor i början.",
-    countDecimalsPrompt: (x) => `Hur många decimaler har ${x}?`,
-    countDecimalsHelp: "Räkna siffrorna efter kommat.",
-    putBackPrompt: (k, p) => `Sätt tillbaka kommat: ${k} steg åt vänster i ${p}. Vad blir det?`,
-    putBackHelp: "Flytta kommat lika många steg som det fanns decimaler.",
+    // Units strategy (decimal < 1), e.g. 0,3 · 20: count in tenths/hundredths, then pick the right size
+    units: {
+      tenths: { one: "tiondel", many: "tiondelar" },
+      hundredths: { one: "hundradel", many: "hundradelar" },
+    },
+    unitCountPrompt: (x, unit) => `Hur många ${unit} är ${x}?`,
+    unitCountHelp: {
+      tenths: "Första rutan efter kommat är tiondelar. Vilken siffra står där?",
+      hundredths: "Andra rutan efter kommat är hundradelar. Vilken siffra står där?",
+    },
+    unitTimesPrompt: (n, unitN, w, unitResult) => `${n} ${unitN} · ${w}\u00a0=\u00a0? ${unitResult}`,
+    unitTimesHelp: (unit) => `Räkna som vanligt, men med ${unit} i stället för hela.`,
+    unitWhichPrompt: (p, unit) => `${p} ${unit}, vilket tal är det?`,
+    unitWhichHelp: {
+      tenths: (p) => `Tio tiondelar blir en hel. Hur många hela blir ${p} tiondelar?`,
+      hundredths: (p) => `Hundra hundradelar blir en hel. Hur många hela blir ${p} hundradelar?`,
+    },
+    bar: {
+      tenths: "10 tiondelar = 1 hel",
+      hundredths: "100 hundradelar = 1 hel",
+    },
     // Feedback inside a step
     stepWrong: "Inte riktigt. Läs tipset och prova igen.",
     reveal: (ans) => `Svaret är ${ans}. Vi tar nästa steg tillsammans.`,
